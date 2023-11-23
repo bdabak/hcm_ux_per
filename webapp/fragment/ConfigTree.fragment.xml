@@ -1,0 +1,29 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <Tree
+        id="idComponentTree"
+        selectionChange=".onCompTreeItemSelected"
+        mode="SingleSelectMaster"
+        items="{path: 'designView>/ComponentTree'}"
+    >
+        <CustomTreeItem cd:RefComp="{designView>ElementId}">
+            <FlexBox
+                justifyContent="SpaceBetween"
+                alignItems="Center"
+                width="100%"
+            >
+                <Text text="{designView>Description} ({designView>Type})" />
+                <HBox>
+                    <Button
+                        icon="sap-icon://add"
+                        press=".onAddComponent"
+                        cd:RefComp="{designView>ElementId}"
+                    />
+                </HBox>
+            </FlexBox>
+        </CustomTreeItem>
+    </Tree>
+</core:FragmentDefinition>

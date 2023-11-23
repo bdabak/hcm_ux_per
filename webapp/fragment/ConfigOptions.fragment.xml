@@ -1,0 +1,30 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <Table
+        alternateRowColors="true"
+        backgroundDesign="Transparent"
+        items="{path:'designView>/ConfigOptions', factory: '.createConfigOptionRows', sorter: { path:'designView>Group', group:true }}"
+        sticky="ColumnHeaders,HeaderToolbar"
+    >
+        <headerToolbar>
+               <Toolbar visible="{= ${designView>/ConfigOptions}.length > 0 }">
+                <Title text="Konfigürasyon" />
+                <ToolbarSpacer/>
+                <Button press=".onSaveConfiguration" icon="sap-icon://save"/>
+            </Toolbar>
+        </headerToolbar>
+         
+
+        <columns>
+            <Column>
+                <Title text="Özellik" />
+            </Column>
+            <Column>
+                <Title text="Değer" />
+            </Column>
+        </columns>
+    </Table>
+</core:FragmentDefinition>

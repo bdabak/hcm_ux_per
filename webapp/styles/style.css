@@ -1,0 +1,33 @@
+
+.mainGrid{
+    background-color: white;
+    border: 2px solid rgba(0,0,0,0.4);
+    border-radius: 7px;
+    box-sizing: border-box;
+}
+
+
+.emphasizedElement{
+    border: 2px dashed red;
+    width: calc(100% - 8px) !important;
+    min-height: 1.9rem !important;
+}
+
+.designPanel{
+    border: 1px solid rgba(0,0,0,0.4);
+    border-radius: 4px;
+    background-color: rgba(255, 255, 0, 0.123);
+    width: 70% !important;
+    padding: 0.3rem;
+}
+
+.configPanel{
+    box-sizing: border-box;
+    width: 30% !important;
+    height: calc(100% - 1rem) !important;
+    border-radius: 7px;
+}
+
+.configPanel, .configPanel *{
+    font-size:0.7rem !important;
+}

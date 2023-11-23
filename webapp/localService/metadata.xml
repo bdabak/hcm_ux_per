@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZHCM_UX_PER_SRV" xml:lang="tr" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <Annotation Term="Core.SchemaVersion" String="1.0.0" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <EntityType Name="Request" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="RequestId"/>
+                    <PropertyRef Name="Version"/>
+                </Key>
+                <Property Name="RequestId" Type="Edm.String" Nullable="false" MaxLength="32" sap:unicode="false" sap:label="Talep no"/>
+                <Property Name="Version" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Versiyon no"/>
+                <Property Name="CreationDate" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Tarih"/>
+                <Property Name="CreationTime" Type="Edm.Time" Precision="0" sap:unicode="false" sap:label="Saat"/>
+                <Property Name="CreatedBy" Type="Edm.String" MaxLength="12" sap:unicode="false" sap:label="Değiştiren"/>
+            </EntityType>
+            <EntityContainer Name="ZHCM_UX_PER_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="RequestSet" EntityType="ZHCM_UX_PER_SRV.Request" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+            </EntityContainer>
+            <atom:link rel="self" href="http://tks0154.thy.com:8000/sap/opu/odata/sap/ZHCM_UX_PER_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="http://tks0154.thy.com:8000/sap/opu/odata/sap/ZHCM_UX_PER_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

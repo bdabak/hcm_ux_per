@@ -1,0 +1,71 @@
+<mvc:View
+    controllerName="com.thy.ux.per.controller.Design"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    displayBlock="true"
+>
+    <Page showHeader="false">
+        <HBox
+            renderType="Bare"
+            width="100%"
+            height="100%"
+            class="designContainer"
+        >
+
+
+            <l:ResponsiveSplitter class="configPanel sapUiTinyMarginTopBottom sapUiTinyMarginBegin">
+                <l:PaneContainer orientation="Vertical">
+                    <l:SplitPane requiredParentWidth="300">
+                        <l:layoutData>
+                            <l:SplitterLayoutData size="50%" />
+                        </l:layoutData>
+                       <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.ConfigTree" />
+                    </l:SplitPane>
+                    <l:SplitPane requiredParentWidth="300">
+                        <l:layoutData>
+                            <l:SplitterLayoutData size="50%" />
+                        </l:layoutData>
+                        <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.ConfigOptions" />
+                    </l:SplitPane>
+                </l:PaneContainer>
+            </l:ResponsiveSplitter>
+
+                        <VBox
+                class="sapUiTinyMargin designPanel sapUiContentPadding"
+            >
+                <Toolbar>
+                    <Title
+                        text="Form Tasarımı"
+                        titleStyle="H3"
+                    />
+                </Toolbar>
+
+                <f:GridContainer
+                    id="idDesignGrid"
+                    width="100%"
+                    class="mainGrid sapUiTinyMarginTop"
+                    cd:CompType="GridContainer"
+                >
+                    <f:layout>
+                        <f:GridContainerSettings
+                            rowSize="3rem"
+                            columnSize="100%"
+                            gap="0.5rem"
+                        />
+                    </f:layout>
+                    <f:layoutXS>
+                        <f:GridContainerSettings
+                            rowSize="2rem"
+                            columnSize="100%"
+                            gap="0.3rem"
+                        />
+                    </f:layoutXS>
+                </f:GridContainer>
+            </VBox>
+        </HBox>
+    </Page>
+</mvc:View>
