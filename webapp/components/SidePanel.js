@@ -23,17 +23,21 @@ sap.ui.define(["sap/ui/core/Control"], function (Control) {
         .class("smod-side-panel")
         .openEnd()
         .openStart("div")
-        .class("smod-design-box-overlay")
+        .class("smod-side-panel-overlay")
         .openEnd()
         .close("div")
+        .openStart("div")
+        .class("smod-side-panel-content")
+        .openEnd()
         .renderControl(oControl.getContent())
+        .close("div")
         .close("div");
     },
     open: function(){
-      this.$(".smod-side-panel").style("width", "250px");
+      $(this.$()[0]).addClass("open");
     },
     close: function(){
-      this.$(".smod-side-panel").style("width", "0");
+      $(this.$()[0]).removeClass("open");
     }
   });
 });

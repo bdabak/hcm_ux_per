@@ -3,13 +3,44 @@
   height: 100%;
   width: 0;
   position: fixed;
-  z-index: 10;
+  
   top: 0;
   right: 0;
   background-color: white;
   overflow-x: hidden;
   transition: 0.5s;
-  padding-top: 60px;
+  box-shadow: -3px 3px 12px 0px rgba(0,0,0,0.4);
+  font-size: 80%;
+}
+.smod-side-panel-content{
+  display: block;
+  z-index: 10;
+}
+
+.smod-side-panel * {
+  font-size: 0.8rem !important; 
+}
+
+.smod-side-panel.open{
+  width: 450px !important;
+}
+
+.smod-side-panel-overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.15); /* Black background with opacity */
+  z-index: 9; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.smod-side-panel.open  .smod-side-panel-overlay{
+  display: block !important;
 }
 
 .smod-side-panel a {

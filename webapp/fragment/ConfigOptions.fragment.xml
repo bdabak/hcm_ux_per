@@ -6,7 +6,7 @@
     <Table
         alternateRowColors="true"
         backgroundDesign="Transparent"
-        items="{path:'designView>/ConfigOptions', factory: '.createConfigOptionRows', sorter: { path:'designView>Group', group:true }}"
+        items="{path:'designView>/ConfigOptions', factory: '.createConfigOptionRows', sorter: { path:'Group', group:true }}"
         sticky="ColumnHeaders,HeaderToolbar"
     >
         <headerToolbar>

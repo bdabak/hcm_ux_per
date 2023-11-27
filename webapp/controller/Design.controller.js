@@ -53,7 +53,10 @@ sap.ui.define(
             {
               ElementId: this.byId("idDesignGrid").getId(),
               Type: "GridContainer",
+              Component: this.byId("idDesignGrid"),
               Properties: null,
+              ParentId: null,
+              AggregationName: null,
             },
           ],
           ComponentPool: [
@@ -74,7 +77,6 @@ sap.ui.define(
               Type: "Panel",
               Description: "Panel",
               DefaultProps: {
-                headerText: "New Panel",
                 width: "100%",
               },
               DefaultAggregations: [
@@ -376,7 +378,10 @@ sap.ui.define(
         //--Get properties
         var aOptions = this._getComponentProperties(oElem);
         oViewModel.setProperty("/ConfigOptions", aOptions);
+
+        // this.byId("idConfigPanel").open();
       },
+
       onAddComponent: function (oEvent) {
         var oSource = oEvent.getSource();
         var sRefComp = oSource.data("RefComp");
@@ -397,6 +402,22 @@ sap.ui.define(
 
         this._openAddMenu(oElem, oSource);
       },
+      onDeleteComponent: function (oEvent) {
+        var oSource = oEvent.getSource();
+        var sRefComp = oSource.data("RefComp");
+
+        if (!sRefComp) {
+          return;
+        }
+
+        var oElem = this._findUIComponent(sRefComp);
+
+        if (!oElem) {
+          return;
+        }
+
+        this._handleDeleteComponent(oElem);
+      },
       onAddMenuSelected: function (oEvent) {
         var oItem = oEvent.getParameter("item");
         var oRef = this._oAddMenu.data("RefComp");
@@ -412,7 +433,9 @@ sap.ui.define(
       },
 
       createConfigOptionRows: function (sId, oContext) {
-        var oUIControl = null;
+        var oUIControl = null,
+          oEl = null,
+          oObj = null;
 
         oUIControl = new sap.m.ColumnListItem(sId, {
           cells: [
@@ -423,30 +446,63 @@ sap.ui.define(
             }),
           ],
         });
-
-        switch (oContext.getProperty("Type")) {
+        var sType = oContext.getProperty("Type");
+        switch (sType) {
           case "boolean":
-            oUIControl.addCell(
-              new sap.m.CheckBox({
-                selected: {
-                  path: "designView>Value",
-                },
-                select: this.onSaveConfiguration.bind(this),
-              })
-            );
+            oEl = new sap.m.CheckBox({
+              selected: {
+                path: "designView>Value",
+              },
+              select: this.onSaveConfiguration.bind(this),
+            });
+
+            break;
+          case "sap.ui.core.CSSSize":
+          case "sap.ui.core.URI":
+            oEl = new sap.m.Input({
+              value: {
+                path: "designView>Value",
+              },
+              submit: this.onSaveConfiguration.bind(this),
+            });
+
             break;
           default:
-            oUIControl.addCell(
-              new sap.m.Input({
+            try {
+              oObj = eval(sType);
+            } catch (e) {}
+            if (sType.includes("sap.") && oObj && typeof oObj === "object") {
+              oEl = new sap.m.Select({
+                items: (() => {
+                  var aValue = [];
+
+                  for (const [key, value] of Object.entries(oObj)) {
+                    aValue.push(
+                      new sap.ui.core.Item({
+                        key: key,
+                        text: value,
+                      })
+                    );
+                  }
+                  return aValue;
+                })(),
+                change: this.onSaveConfiguration.bind(this),
+                selectedKey: {
+                  path: "designView>Value",
+                },
+              });
+            } else {
+              oEl = new sap.m.Input({
                 value: {
                   path: "designView>Value",
                 },
                 submit: this.onSaveConfiguration.bind(this),
-              })
-            );
+              });
+            }
             break;
         }
 
+        oUIControl.addCell(oEl);
         return oUIControl;
       },
       onSaveConfiguration: function () {
@@ -463,6 +519,13 @@ sap.ui.define(
           } catch (e) {}
         });
       },
+      checkIsDeletable: function (sId) {
+        var oComp = this._findUIComponent(sId);
+        if (!oComp || !oComp.ParentId) {
+          return false;
+        }
+        return true;
+      },
       /* =========================================================== */
       /* internal methods                                            */
       /* =========================================================== */
@@ -474,6 +537,47 @@ sap.ui.define(
         }
 
         this._createComponent(oParent, sChildType);
+      },
+      _handleDeleteComponent(oElement) {
+        var oViewModel = this.getModel("designView");
+        var aCompPool = oViewModel.getProperty("/ComponentPool");
+        var aCompTree = oViewModel.getProperty("/ComponentTree");
+        var aCompList = oViewModel.getProperty("/ComponentList");
+
+        var oParent = this._getUIComponent(oElement.ParentId);
+
+        try {
+          oParent?.removeAggregation(
+            oElement.AggregationName,
+            oElement.ElementId
+          );
+
+          oElement.Component.destroy();
+
+          var deleteItem = function (oEl) {
+            var i = aCompList.findIndex((o) => o.ElementId === oEl.ElementId);
+            if (i !== -1) {
+              aCompList.splice(i, 1);
+            }
+          };
+
+          var deleteChildNodeRecursive = function (aTree, sId, bDel) {
+            for (var [i, oItem] of aTree.entries()) {
+              if (oItem.ElementId === sId || bDel) {
+                deleteChildNodeRecursive(oItem.Children, null, true);
+                aTree.splice(i, 1);
+                deleteItem(oItem);
+              } else {
+                deleteChildNodeRecursive(oItem.Children, sId, false);
+              }
+            }
+          };
+
+          deleteChildNodeRecursive(aCompTree, oElement.ElementId, false);
+
+          oViewModel.setProperty("/ComponentTree", aCompTree);
+          oViewModel.setProperty("/ComponentList", aCompList);
+        } catch (e) {}
       },
       _createComponent: function (oParent, sChildType) {
         var oViewModel = this.getModel("designView");
@@ -540,7 +644,7 @@ sap.ui.define(
             };
 
             addChildNodeRecursive(aCompTree, oParent.getId(), oNewItem);
-            oViewModel.setProperty("/ComponentTree", aCompTree);
+            
 
             //Refresh Component List
             aCompList.push({
@@ -548,10 +652,12 @@ sap.ui.define(
               ParentId: oParent.getId(),
               Component: oChildInstance,
               Type: sChildType,
+              AggregationName: oAggr.Name,
               Properties: { ...oChildComp.DefaultProps },
             });
 
             oViewModel.setProperty("/ComponentList", aCompList);
+            oViewModel.setProperty("/ComponentTree", aCompTree);
 
             if (
               oChildComp?.DefaultAggregations &&
@@ -581,13 +687,20 @@ sap.ui.define(
         }
       },
       _getUIComponent: function (sId) {
+        var oComp = this._findUIComponent(sId);
+
+        if (oComp) {
+          return oComp.Component;
+        }
+      },
+      _findUIComponent: function (sId) {
         var oViewModel = this.getModel("designView");
         var aCompList = oViewModel.getProperty("/ComponentList");
 
         var oComp = aCompList.find((o) => o.ElementId === sId);
 
         if (oComp) {
-          return oComp.Component;
+          return oComp;
         }
       },
       _openAddMenu: function (oRef, oSource) {

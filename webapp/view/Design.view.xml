@@ -5,6 +5,7 @@
     xmlns:l="sap.ui.layout"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
+    xmlns:smod="com.thy.ux.per.components"
     xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
     displayBlock="true"
 >
@@ -15,28 +16,32 @@
             height="100%"
             class="designContainer"
         >
-
-
-            <l:ResponsiveSplitter class="configPanel sapUiTinyMarginTopBottom sapUiTinyMarginBegin">
+            <l:ResponsiveSplitter
+                class="configPanel sapUiTinyMarginTopBottom sapUiTinyMarginBegin"
+            >
                 <l:PaneContainer orientation="Vertical">
                     <l:SplitPane requiredParentWidth="300">
                         <l:layoutData>
-                            <l:SplitterLayoutData size="50%" />
+                            <l:SplitterLayoutData size="{= ${designView>/ConfigOptions}.length > 0 ? '50%' : '100%' }" />
                         </l:layoutData>
-                       <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.ConfigTree" />
+                        <core:Fragment
+                            type="XML"
+                            fragmentName="com.thy.ux.per.fragment.ConfigTree"
+                        />
                     </l:SplitPane>
                     <l:SplitPane requiredParentWidth="300">
                         <l:layoutData>
-                            <l:SplitterLayoutData size="50%" />
+                            <l:SplitterLayoutData size="{= ${designView>/ConfigOptions}.length > 0 ? '50%' : '0%' }" />
                         </l:layoutData>
-                        <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.ConfigOptions" />
+                        <core:Fragment
+                            type="XML"
+                            fragmentName="com.thy.ux.per.fragment.ConfigOptions"
+                        />
                     </l:SplitPane>
                 </l:PaneContainer>
             </l:ResponsiveSplitter>
 
-                        <VBox
-                class="sapUiTinyMargin designPanel sapUiContentPadding"
-            >
+            <VBox class="sapUiTinyMargin designPanel sapUiContentPadding">
                 <Toolbar>
                     <Title
                         text="Form Tasarımı"
@@ -67,5 +72,14 @@
                 </f:GridContainer>
             </VBox>
         </HBox>
+        <!-- <smod:SidePanel 
+            id="idConfigPanel"     >
+            <smod:content>
+                <core:Fragment
+                            type="XML"
+                            fragmentName="com.thy.ux.per.fragment.ConfigOptions"
+                        />
+            </smod:content>
+        </smod:SidePanel> -->
     </Page>
 </mvc:View>

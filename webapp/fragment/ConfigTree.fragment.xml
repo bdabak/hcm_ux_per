@@ -21,6 +21,15 @@
                         icon="sap-icon://add"
                         press=".onAddComponent"
                         cd:RefComp="{designView>ElementId}"
+                        
+                    />
+                    <Button
+                        icon="sap-icon://delete"
+                        press=".onDeleteComponent"
+                        type="Reject"
+                        cd:RefComp="{designView>ElementId}"
+                        class="sapUiTinyMarginBegin"
+                        visible="{path:'designView>ElementId', formatter: '.checkIsDeletable'}"
                     />
                 </HBox>
             </FlexBox>
