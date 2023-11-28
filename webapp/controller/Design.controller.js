@@ -7,25 +7,27 @@ sap.ui.define(
     "sap/m/MessageBox",
     "sap/ui/core/Fragment",
     "sap/ui/core/library",
+    "com/thy/ux/per/model/ComponentPool",
     "../model/formatter",
   ],
   function (
     BaseController,
-    JSONModel,
-    DragInfo,
-    DropInfo,
-    MessageBox,
-    Fragment,
-    coreLibrary,
-    formatter
+	JSONModel,
+	DragInfo,
+	DropInfo,
+	MessageBox,
+	Fragment,
+	library,
+	ComponentPool,
+	formatter
   ) {
     "use strict";
 
     // shortcut for sap.ui.core.dnd.DropLayout
-    var DropLayout = coreLibrary.dnd.DropLayout;
+    var DropLayout = library.dnd.DropLayout;
 
     // shortcut for sap.ui.core.dnd.DropPosition
-    var DropPosition = coreLibrary.dnd.DropPosition;
+    var DropPosition = library.dnd.DropPosition;
 
     return BaseController.extend("com.thy.ux.per.controller.Design", {
       formatter: formatter,
@@ -59,294 +61,19 @@ sap.ui.define(
               AggregationName: null,
             },
           ],
-          ComponentPool: [
-            {
-              Group: "Container",
-              Class: sap.f.GridContainer,
-              Type: "GridContainer",
-              Description: "Grid Container",
-              Aggregations: [
-                { Name: "items", Type: "Panel", AddMethod: "addItem" },
-                { Name: "items,", Type: "Form", AddMethod: "addItem" },
-              ],
-              Visible: true,
-            },
-            {
-              Group: "Container",
-              Class: sap.m.Panel,
-              Type: "Panel",
-              Description: "Panel",
-              DefaultProps: {
-                width: "100%",
-              },
-              DefaultAggregations: [
-                {
-                  Name: "headerToolbar",
-                  Type: "Toolbar",
-                },
-              ],
-              Aggregations: [
-                {
-                  Name: "headerToolbar",
-                  Type: "Toolbar",
-                  AddMethod: "setHeaderToolbar",
-                },
-                { Name: "content", Type: "Panel", AddMethod: "addContent" },
-                { Name: "content", Type: "Form", AddMethod: "addContent" },
-              ],
-              Visible: true,
-            },
-            {
-              Group: "Layout",
-              Class: sap.ui.layout.form.Form,
-              Type: "Form",
-              Description: "Form",
-              DefaultProps: {
-                editable: true,
-              },
-              DefaultAggregations: [
-                {
-                  Name: "layout",
-                  Type: "ResponsiveGridLayout",
-                },
-                {
-                  Name: "formContainers",
-                  Type: "FormContainer",
-                },
-              ],
-              Aggregations: [
-                {
-                  Name: "layout",
-                  Type: "ResponsiveGridLayout",
-                  AddMethod: "setLayout",
-                },
-                {
-                  Name: "formContainers",
-                  Type: "FormContainer",
-                  AddMethod: "insertFormContainer",
-                },
-              ],
-              Visible: true,
-            },
-            {
-              Group: "ResponsiveGridLayout",
-              Class: sap.ui.layout.form.ResponsiveGridLayout,
-              Type: "ResponsiveGridLayout",
-              DefaultProps: {
-                labelSpanXL: 4,
-                labelSpanL: 4,
-                labelSpanM: 12,
-                labelSpanS: 12,
-                adjustLabelSpan: false,
-                emptySpanXL: 0,
-                emptySpanL: 0,
-                emptySpanM: 0,
-                emptySpanS: 0,
-                columnsXL: 2,
-                columnsL: 2,
-                columnsM: 1,
-                singleContainerFullSize: false,
-              },
-              Description: "Reponsive Grid Layout",
-              Visible: true,
-            },
-            {
-              Group: "Layout",
-              Class: sap.ui.layout.form.FormContainer,
-              Type: "FormContainer",
-              Description: "Form Container",
-              DefaultProps: {
-                expandable: false,
-                expanded: true,
-                visible: true,
-              },
-              DefaultAggregations: [
-                {
-                  Name: "title",
-                  Type: "CoreTitle",
-                },
-                {
-                  Name: "formElements",
-                  Type: "FormElement",
-                },
-              ],
-              Aggregations: [
-                {
-                  Name: "formElements",
-                  Type: "FormElement",
-                  AddMethod: "addFormElement",
-                },
-                {
-                  Name: "title",
-                  Type: "CoreTitle",
-                  AddMethod: "setTitle",
-                },
-              ],
-            },
-            {
-              Group: "Layout",
-              Class: sap.m.Toolbar,
-              Type: "Toolbar",
-              Description: "Toolbar",
-              DefaultAggregations: [
-                {
-                  Name: "items",
-                  Type: "Title",
-                },
-              ],
-              Aggregations: [
-                {
-                  Name: "content",
-                  Type: "Title",
-                  AddMethod: "addContent",
-                },
-                {
-                  Name: "content",
-                  Type: "Text",
-                  AddMethod: "addContent",
-                },
-                {
-                  Name: "content",
-                  Type: "ToolbarSpacer",
-                  AddMethod: "addContent",
-                },
-                {
-                  Name: "content",
-                  Type: "ToolbarSeparator",
-                  AddMethod: "addContent",
-                },
-                {
-                  Name: "content",
-                  Type: "Button",
-                  AddMethod: "addContent",
-                },
-              ],
-            },
-            {
-              Group: "Layout",
-              Class: sap.ui.layout.form.FormElement,
-              Type: "FormElement",
-              Description: "Form Element",
-              Aggregations: [
-                {
-                  Name: "fields",
-                  Type: "Input",
-                  AddMethod: "addField",
-                },
-                {
-                  Name: "label",
-                  Type: "Label",
-                  AddMethod: "setLabel",
-                },
-              ],
-            },
-            {
-              Group: "Layout",
-              Class: sap.m.FlexBox,
-              Type: "FlexBox",
-              Description: "Flex Box",
-            },
-            {
-              Group: "Layout",
-              Class: sap.m.HBox,
-              Type: "HBox",
-              Description: "Horizontal Box",
-            },
-            {
-              Group: "Layout",
-              Class: sap.m.VBox,
-              Type: "VBox",
-              Description: "Vertical Box",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.Input,
-              Type: "Input",
-              Description: "Input",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.Label,
-              DefaultProps: {
-                text: "Label",
-              },
-              Type: "Label",
-              Description: "Label",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.Text,
-              Type: "Text",
-              Description: "Text",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.Title,
-              Type: "Title",
-              DefaultProps: {
-                text: "Default Title",
-              },
-              Description: "Title",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.Button,
-              Type: "Button",
-              DefaultProps: {
-                text: "Button",
-              },
-              Description: "Button",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.ToolbarSpacer,
-              Type: "ToolbarSpacer",
-              Description: "ToolbarSpacer",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.ToolbarSeparator,
-              Type: "ToolbarSeparator",
-              Description: "ToolbarSeparator",
-            },
-            {
-              Group: "Element",
-              Class: sap.ui.core.Title,
-              DefaultProps: {
-                text: "Default Title",
-              },
-              Type: "CoreTitle",
-              Description: "Title (Core)",
-            },
-            {
-              Group: "Element",
-              Class: sap.m.TextArea,
-              Type: "TextArea",
-              Description: "Text Area",
-            },
-            {
-              Group: "Element",
-              Class: "sap.m.ComboBox",
-              Type: "ComboBox",
-              Description: "Combo Box",
-            },
-            {
-              Group: "Element",
-              Class: "sap.m.MultiComboBox",
-              Type: "MultiComboBox",
-              Description: "Multi Combo Box",
-            },
-          ],
+          ComponentPool: ComponentPool.getPool(),
           AddMenuOptions: [],
           ConfigOptions: [],
+          CustomStyles: [],
+          IconList: this._getIconList()
         });
 
         this._selectedUIComponent = null;
 
+        oViewModel.setSizeLimit(999);
+
         this.setModel(oViewModel, "designView");
 
-        //--Define initial drag and drop
-        // this._attachDragAndDrop();
       },
 
       /* =========================================================== */
@@ -357,6 +84,7 @@ sap.ui.define(
         var oViewModel = this.getModel("designView");
         var sRefComp = oItem.data("RefComp");
         oViewModel.setProperty("/ConfigOptions", []);
+        oViewModel.setProperty("/CustomStyles", []);
 
         var oElem = $("#" + sRefComp).control()[0];
 
@@ -380,6 +108,53 @@ sap.ui.define(
         oViewModel.setProperty("/ConfigOptions", aOptions);
 
         // this.byId("idConfigPanel").open();
+
+        var aCustomStyles = [];
+
+        if(oElem?.aCustomStyleClasses){
+          aCustomStyles = [...oElem.aCustomStyleClasses].map((o,i)=>{
+            return {
+              Key: "key_" + i + "_" + new Date().getTime(),
+              Value: o
+            }
+          });
+        }
+
+        oViewModel.setProperty("/CustomStyles", aCustomStyles);
+
+      },
+
+      onStyleUpdated: function(oEvent){
+        var aRemoved = oEvent.getParameter("removedTokens");
+        var oViewModel = this.getModel("designView");
+        var aCustomStyles =  oViewModel.getProperty("/CustomStyles");
+
+        aRemoved.forEach((r)=>{
+          var i = aCustomStyles.findIndex((s)=> s.Key === r.getProperty("key"));
+          if(i !== -1) aCustomStyles.splice(i, 1);
+        });
+
+
+        oViewModel.setProperty("/CustomStyles", aCustomStyles);
+
+        this.onSaveConfiguration();
+      },
+
+      onStyleAdded: function(oEvent){
+        var oViewModel = this.getModel("designView");
+        var aCustomStyles =  oViewModel.getProperty("/CustomStyles");
+        var sNew = oEvent.getParameter("value");
+
+        aCustomStyles.push({
+          Key: "key_" + (aCustomStyles.length+1) + "_" + new Date().getTime(),
+          Value: sNew
+        });
+
+        oViewModel.setProperty("/CustomStyles", aCustomStyles);
+
+        oEvent.getSource().setValue(null);
+
+        this.onSaveConfiguration();
       },
 
       onAddComponent: function (oEvent) {
@@ -416,7 +191,18 @@ sap.ui.define(
           return;
         }
 
-        this._handleDeleteComponent(oElem);
+
+        this.confirmDialog({
+          title: this.getText("DEL_COMPONENT_TITLE", []),
+          html: this.getText("DEL_COMPONENT_TEXT", [oElem.Type]),
+          icon: "warning",
+          confirmButtonText: this.getText("DELETE_ACTION"),
+          confirmCallbackFn: function(){
+            this._handleDeleteComponent(oElem);
+          }.bind(this),
+        });
+
+
       },
       onAddMenuSelected: function (oEvent) {
         var oItem = oEvent.getParameter("item");
@@ -459,14 +245,41 @@ sap.ui.define(
             break;
           case "sap.ui.core.CSSSize":
           case "sap.ui.core.URI":
-            oEl = new sap.m.Input({
-              value: {
-                path: "designView>Value",
-              },
-              submit: this.onSaveConfiguration.bind(this),
-            });
+           
+            if(oContext.getProperty("Name") === "icon"){
+              oEl = new sap.m.Input({
+                value: {
+                  path: "designView>Value",
+                },
+                submit: this.onSaveConfiguration.bind(this),
+                showSuggestion: true,
+                suggestionItems:{
+                  path: "designView>/IconList",
+                  template: new sap.ui.core.Item({
+                    key: "{designView>Key}",
+                    text: "{designView>Icon}",
+                  })
+                },
+                suggestionItemSelected: function(oEvent){
+                  var oItem = oEvent.getParameter("selectedItem");
+
+                  oEl.setValue(oItem?.getKey());
+                }
+              });
+
+            }else{
+              
+              oEl = new sap.m.Input({
+                value: {
+                  path: "designView>Value",
+                },
+                submit: this.onSaveConfiguration.bind(this),
+              });
+            }
+           
 
             break;
+
           default:
             try {
               oObj = eval(sType);
@@ -508,16 +321,31 @@ sap.ui.define(
       onSaveConfiguration: function () {
         var oViewModel = this.getModel("designView");
         var aOptions = oViewModel.getProperty("/ConfigOptions");
+        var aCustomStyles = oViewModel.getProperty("/CustomStyles");
+        var that = this;
+       
 
         if (!this._selectedUIComponent) {
           return;
         }
 
+        //Get current styles
+        var aCurrentStyles = this._selectedUIComponent?.aCustomStyleClasses ? [...this._selectedUIComponent?.aCustomStyleClasses] : [];
+
         aOptions.forEach((o) => {
           try {
-            this._selectedUIComponent?.setProperty(o.Name, o.Value);
+            that._selectedUIComponent?.setProperty(o.Name, o.Value);
           } catch (e) {}
         });
+
+        aCurrentStyles.forEach((s)=>{
+          that._selectedUIComponent.removeStyleClass(s);
+        });
+
+        aCustomStyles.forEach((s)=>{
+          that._selectedUIComponent.addStyleClass(s.Value);
+        });
+
       },
       checkIsDeletable: function (sId) {
         var oComp = this._findUIComponent(sId);
@@ -536,7 +364,11 @@ sap.ui.define(
           return;
         }
 
-        this._createComponent(oParent, sChildType);
+        var bSuccess = this._createComponent(oParent, sChildType);
+        if(bSuccess){
+          this.toastMessage("S", "MESSAGE_SUCCESSFUL", "ADD_COMPONENT_SUCCESSFUL", []);
+          this.byId("idComponentTree").expandToLevel(3);
+        }
       },
       _handleDeleteComponent(oElement) {
         var oViewModel = this.getModel("designView");
@@ -577,6 +409,8 @@ sap.ui.define(
 
           oViewModel.setProperty("/ComponentTree", aCompTree);
           oViewModel.setProperty("/ComponentList", aCompList);
+          oViewModel.setProperty("/ConfigOptions", []);
+          oViewModel.setProperty("/CustomStyles", []);
         } catch (e) {}
       },
       _createComponent: function (oParent, sChildType) {
@@ -667,12 +501,14 @@ sap.ui.define(
                 this._createComponent(oChildInstance, oSubAggr.Type);
               }
             }
+
+            return true;
           }
         } catch (e) {
-          MessageBox.show("Hata oluştu:" + e, {
-            icon: MessageBox.Icon.ERROR,
-            title: "Hata Oluştu",
-          });
+
+          this.toastMessage("E", "MESSAGE_ERROR", "ADD_COMPONENT_FAILED", [e]);
+         
+          return false;
         }
       },
 
@@ -773,6 +609,16 @@ sap.ui.define(
 
         return aProp;
       },
+      _getIconList: function(){
+        var aIcons = sap.ui.core.IconPool.getIconNames();
+
+        return aIcons.map((i)=>{
+          return {
+            Key: "sap-icon://" + i,
+            Icon: i
+          }
+        });
+      }
       // onDrop: function (oInfo) {
       //   var oDragged = oInfo.getParameter("draggedControl"),
       //     oDropped = oInfo.getParameter("droppedControl"),

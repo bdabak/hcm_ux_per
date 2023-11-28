@@ -1,6 +1,8 @@
 sap.ui.define([
-    "./BaseController"
-], function (BaseController) {
+    "./BaseController",
+    "com/thy/ux/per/utils/swal"
+], function (BaseController,
+	SwalJS) {
     "use strict";
 
     return BaseController.extend("com.thy.ux.per.controller.App", {

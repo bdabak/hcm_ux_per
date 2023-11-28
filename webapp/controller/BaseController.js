@@ -48,18 +48,190 @@ sap.ui.define([
             return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },
 
-        /**
-         * Event handler when the share by E-Mail button has been clicked
-         * @public
-         */
-        onShareEmailPress : function () {
-            var oViewModel = (this.getModel("objectView") || this.getModel("worklistView"));
-            URLHelper.triggerEmail(
-                null,
-                oViewModel.getProperty("/shareSendEmailSubject"),
-                oViewModel.getProperty("/shareSendEmailMessage")
-            );
-        }
+        getText: function (sTextCode, aParam) {
+			var aTextParam = aParam;
+			if (!aTextParam) {
+				aTextParam = [];
+			}
+			return this.getResourceBundle().getText(sTextCode, aTextParam);
+		},
+
+       
+		alertMessage: function (sType, sTitle, sMessage, aMessageParam) {
+			var sIcon;
+
+			switch (sType) {
+				case "W":
+					sIcon = "warning";
+					break;
+				case "E":
+					sIcon = "error";
+					break;
+				case "S":
+					sIcon = "success";
+					break;
+				case "I":
+					sIcon = "information";
+					break;
+				default:
+					sIcon = "success";
+			}
+
+			this.showMessage({
+				text: this.getText(sMessage, aMessageParam),
+				title: this.getText(sTitle),
+				icon: sIcon,
+				showConfirmButton: true,
+				timer: undefined,
+			});
+
+		},
+
+        toastMessage: function (sType, sTitle, sMessage, aMessageParam) {
+			var sIcon;
+
+			switch (sType) {
+				case "W":
+					sIcon = "warning";
+					break;
+				case "E":
+					sIcon = "error";
+					break;
+				case "S":
+					sIcon = "success";
+					break;
+				case "I":
+					sIcon = "information";
+					break;
+				default:
+					sIcon = "success";
+			}
+
+			this.showMessage({
+				text: this.getText(sMessage, aMessageParam),
+				title: this.getText(sTitle),
+				icon: sIcon,
+				showConfirmButton: false,
+			});
+
+		},
+
+		// toastMessage: function (sMessage, aParam) {
+		// 	MessageToast.show(this.getText(sMessage, aParam));
+		// },
+
+		showMessage: function (
+			opts
+		) {
+			var options = {
+				title: null,
+				text: null,
+				html: null,
+				icon: "info",
+				position: "bottom",
+				timer: undefined,
+				timerProgressBar: false,
+				showConfirmButton: false,
+				confirmButtonText: this.getText("CONFIRM_ACTION", []),
+				confirmButtonColor: "#3085d6",
+				showCancelButton: false,
+				cancelButtonText: this.getText("CANCEL_ACTION", []),
+				cancelButtonColor: "#d33",
+				showCloseButton: false,
+				toast: true,
+				timer: 3000,
+				timerProgressBar: false,
+				customClass: {
+					popup: "colored-toast"
+				},
+				iconColor: "white",
+				backdrop:false
+			};
+
+			for (var k in options) {
+				if (opts.hasOwnProperty(k)) {
+					options[k] = opts[k];
+				}
+			}
+
+			Swal.fire({ ...options }).then(function (result) {
+				if (result.isConfirmed) {
+					if (opts.confirmCallbackFn !== undefined) {
+						try {
+							opts.confirmCallbackFn();
+						} catch (e) {
+
+						}
+					}
+				}
+				if (result.isCancelled) {
+					if (opts.cancelCallbackFn !== undefined) {
+						try {
+							opts.cancelCallbackFn();
+						} catch (e) {
+
+						}
+					}
+				}
+			});
+		},
+		confirmDialog: function (opts) {
+			var options = {
+				title: null,
+				html: null,
+				icon: "info",
+				position: "center",
+				timer: undefined,
+				timerProgressBar: false,
+				showConfirmButton: true,
+				confirmButtonText: this.getText("CONFIRM_ACTION", []),
+				confirmButtonColor: "#3085d6",
+
+				showCancelButton: true,
+				cancelButtonText: this.getText("CANCEL_ACTION", []),
+				cancelButtonColor: "#d33",
+				showCloseButton: false,
+				focusConfirm: true,
+				toast: false,
+				timer: undefined,
+				timerProgressBar: false,
+				allowOutsideClick: false,
+				allowEscapeKey: false,
+				allowEnterKey: true,
+				input: undefined,
+				inputLabel: "",
+				inputPlaceholder: "",
+				inputAttributes: {},
+				preConfirm: null
+			};
+
+			for (var k in options) {
+				if (opts.hasOwnProperty(k)) {
+					options[k] = opts[k];
+				}
+			}
+
+			Swal.fire({ ...options }).then(function (result) {
+				if (result.isConfirmed) {
+					if (opts.confirmCallbackFn !== undefined) {
+						try {
+							opts.confirmCallbackFn();
+						} catch (e) {
+
+						}
+					}
+				}
+				if (result.isCancelled) {
+					if (opts.cancelCallbackFn !== undefined) {
+						try {
+							opts.cancelCallbackFn();
+						} catch (e) {
+
+						}
+					}
+				}
+			});
+		},
     });
 
 });

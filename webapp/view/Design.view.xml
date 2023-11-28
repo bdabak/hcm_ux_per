@@ -47,6 +47,9 @@
                         text="Form Tasarımı"
                         titleStyle="H3"
                     />
+                    <ToolbarSpacer  />
+                    <Button type="Accept" icon="sap-icon://save" tooltip="{i18n>SAVE_ACTION}"  press=".onSaveForm"/>
+                    <Button type="Reject" icon="sap-icon://workflow-tasks" tooltip="{i18n>SAVE_AS_ACTION}" press=".onSaveAsForm"/>
                 </Toolbar>
 
                 <f:GridContainer
