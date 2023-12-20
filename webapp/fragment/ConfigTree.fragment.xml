@@ -7,7 +7,9 @@
         id="idComponentTree"
         selectionChange=".onCompTreeItemSelected"
         mode="SingleSelectMaster"
-        items="{path: 'designView>/ComponentTree'}"
+        items="{path: 'designView>/ComponentTree', parameters: {
+        numberOfExpandedLevels: 6
+     }}"
     >
         <CustomTreeItem cd:RefComp="{designView>ElementId}">
             <FlexBox
@@ -15,12 +17,33 @@
                 alignItems="Center"
                 width="100%"
             >
-                <Text text="{designView>Description} ({designView>Type})" />
+                <Text text="{path:'designView>Description'} {parts:[{path:'designView>ElementId'},{path:'designView>/TreeRefreshToken'}], formatter:'.getFieldDescription'}" />
                 <HBox>
+                    <Button
+                        icon="sap-icon://up"
+                        press=".onMoveUp"
+                        type="Transparent"
+                        cd:ElementId="{designView>ElementId}"
+                        cd:AggregationName="{designView>AggregationName}"
+                        visible="{path:'designView>', formatter: '.checkIsMoveableToUp'}"
+                    />
+
+                    <Button
+                        icon="sap-icon://down"
+                        press=".onMoveDown"
+                         type="Transparent"
+                        cd:ElementId="{designView>ElementId}"
+                        cd:AggregationName="{designView>AggregationName}"
+                         visible="{ path:'designView>', formatter: '.checkIsMoveableToDown'}"
+                          class="sapUiTinyMarginBegin"
+                        
+                    />
+
                     <Button
                         icon="sap-icon://add"
                         press=".onAddComponent"
                         cd:RefComp="{designView>ElementId}"
+                         class="sapUiTinyMarginBegin"
                         
                     />
                     <Button

@@ -1,9 +1,10 @@
-sap.ui.define([], function () {
+sap.ui.define(["com/thy/ux/per/components/InputField"], function (
+	InputField) {
   "use strict";
   return (
     "com.thy.ux.per.model.ComponentPool",
     {
-      getPool: function () {
+      loadPool: function () {
         return [
           {
             Group: "Container",
@@ -11,6 +12,7 @@ sap.ui.define([], function () {
             Type: "GridContainer",
             Description: "Grid Container",
             Aggregations: [
+              { Name: "items", Type: "MdTabContainer", AddMethod: "addItem" },
               { Name: "items", Type: "Panel", AddMethod: "addItem" },
               { Name: "items,", Type: "Form", AddMethod: "addItem" },
               { Name: "items", Type: "HBox", AddMethod: "addItem" },
@@ -20,12 +22,56 @@ sap.ui.define([], function () {
           },
           {
             Group: "Container",
+            Class: com.smod.ux.mat.controls.TabContainer,
+            Type: "MdTabContainer",
+            Description: "Tab Container MD",
+            DefaultAggregations: [
+              {
+                Name: "tabs",
+                Type: "MdTab",
+              },
+              {
+                Name: "tabPanels",
+                Type: "MdTabPanel",
+              },
+            ],
+            Aggregations: [
+              { Name: "tabs", Type: "MdTab", AddMethod: "addTab" },
+              { Name: "tabPanels", Type: "MdTabPanel", AddMethod: "addTabPanel" },
+            ],
+          },
+          {
+            Group: "Container",
+            Class: com.smod.ux.mat.controls.Tab,
+            Type: "MdTab",
+            Description: "Tab MD",
+            DefaultProps: {
+              title: "Tab Title",
+            },
+            Aggregations: [
+              { Name: "icon", Type: "MdIcon", AddMethod: "setIcon" }
+            ],
+          },
+          {
+            Group: "Container",
+            Class: com.smod.ux.mat.controls.TabPanel,
+            Type: "MdTabPanel",
+            Description: "TabPanel MD",
+            Aggregations: [
+              { Name: "content,", Type: "Form", AddMethod: "setContent" },
+              { Name: "content", Type: "HBox", AddMethod: "setContent" },
+              { Name: "content", Type: "VBox", AddMethod: "setContent" },
+            ],
+          },
+
+          {
+            Group: "Container",
             Class: sap.m.Panel,
             Type: "Panel",
             Description: "Panel",
             DefaultProps: {
               expandable: true,
-              expanded: true
+              expanded: true,
             },
             DefaultAggregations: [
               {
@@ -73,10 +119,11 @@ sap.ui.define([], function () {
               {
                 Name: "formContainers",
                 Type: "FormContainer",
-                AddMethod: "insertFormContainer",
+                AddMethod: "addFormContainer",
               },
             ],
           },
+
           {
             Group: "ResponsiveGridLayout",
             Class: sap.ui.layout.form.ResponsiveGridLayout,
@@ -132,6 +179,18 @@ sap.ui.define([], function () {
           },
           {
             Group: "Layout",
+            Class: sap.ui.layout.GridData,
+            Type: "GridData",
+            Description: "Grid Data",
+            DefaultProps: {
+              spanXL: 4,
+              spanL: 4,
+              spanM: 6,
+              spanS: 12,
+            },
+          },
+          {
+            Group: "Layout",
             Class: sap.m.Toolbar,
             Type: "Toolbar",
             Description: "Toolbar",
@@ -177,7 +236,52 @@ sap.ui.define([], function () {
             Aggregations: [
               {
                 Name: "fields",
+                Type: "MdTextField",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "MdSelect",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "MdRadioGroup",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
                 Type: "Input",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "SmodInput",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "CheckBox",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "RadioButtonGroup",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "ComboBox",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "MultiComboBox",
+                AddMethod: "addField",
+              },
+              {
+                Name: "fields",
+                Type: "TextArea",
                 AddMethod: "addField",
               },
               {
@@ -231,6 +335,134 @@ sap.ui.define([], function () {
             Class: sap.m.Input,
             Type: "Input",
             Description: "Input",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.TextField,
+            Type: "MdTextField",
+            Description: "Text Field (MD)",
+            DefaultProps: {
+              label: "Default Label",
+              placeholder: "Descriptive text..."
+            },
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Select,
+            Type: "MdSelect",
+            Description: "Select Field (MD)",
+            DefaultProps: {
+              label: "Default Label"
+            },
+            DefaultAggregations:[
+              {
+                Name: "options",
+                Type: "MdSelectOption",
+              },
+              {
+                Name: "options",
+                Type: "MdSelectOption",
+              }
+            ],  
+            Aggregations: [
+              {
+                Name: "options",
+                Type: "MdSelectOption",
+                AddMethod: "addOption",
+              },
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.CheckBox,
+            Type: "MdCheckBox",
+            Description: "Checkbox (MD)",
+            DefaultProps: {
+              label: "Default Label",
+            },
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.RadioGroup,
+            Type: "MdRadioGroup",
+            Description: "RadioGroup (MD)",
+            DefaultProps: {
+              name: "DefaultGroup",
+            },
+            Aggregations: [
+              {
+                Name: "items",
+                Type: "MdRadio",
+                AddMethod: "addItem",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Radio,
+            Type: "MdRadio",
+            Description: "Radio Button (MD)",
+            DefaultProps: {
+              checked: false,
+            }
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Icon,
+            Type: "MdIcon",
+            Description: "Icon (MD)",
+            DefaultProps: {
+              icon: "home",
+            }
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.SelectOption,
+            Type: "MdSelectOption",
+            Description: "Select Option (MD)",
+            DefaultProps: {
+              key: new Date().getTime() + parseInt(Math.random() * 10000,10),
+              value: "Option Value"
+            }
+          },
+          {
+            Group: "Element",
+            Class: com.thy.ux.per.components.InputField,
+            Type: "SmodInput",
+            Description: "Custom Input",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
           {
             Group: "Element",
@@ -246,6 +478,13 @@ sap.ui.define([], function () {
             Class: sap.m.Text,
             Type: "Text",
             Description: "Text",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
           {
             Group: "Element",
@@ -264,18 +503,25 @@ sap.ui.define([], function () {
               text: "Button",
             },
             Description: "Button",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
           {
             Group: "Element",
             Class: sap.m.ToolbarSpacer,
             Type: "ToolbarSpacer",
-            Description: "ToolbarSpacer",
+            Description: "Toolbar Spacer",
           },
           {
             Group: "Element",
             Class: sap.m.ToolbarSeparator,
             Type: "ToolbarSeparator",
-            Description: "ToolbarSeparator",
+            Description: "Toolbar Separator",
           },
           {
             Group: "Element",
@@ -291,18 +537,70 @@ sap.ui.define([], function () {
             Class: sap.m.TextArea,
             Type: "TextArea",
             Description: "Text Area",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
           {
             Group: "Element",
-            Class: "sap.m.ComboBox",
+            Class: sap.m.CheckBox,
+            Type: "CheckBox",
+            Description: "Check Box",
+          },
+          {
+            Group: "Element",
+            Class: sap.m.RadioButtonGroup,
+            Type: "RadioButtonGroup",
+            Description: "Radio Button Group",
+            Aggregations: [
+              {
+                Name: "buttons",
+                Type: "RadioButton",
+                AddMethod: "addButton",
+              },
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
+          },
+          {
+            Group: "Element",
+            Class: sap.m.RadioButton,
+            Type: "RadioButton",
+            Description: "Radio Button",
+            Aggregations: []
+          },
+          {
+            Group: "Element",
+            Class: sap.m.ComboBox,
             Type: "ComboBox",
             Description: "Combo Box",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
           {
             Group: "Element",
-            Class: "sap.m.MultiComboBox",
+            Class: sap.m.MultiComboBox,
             Type: "MultiComboBox",
             Description: "Multi Combo Box",
+            Aggregations: [
+              {
+                Name: "layoutData",
+                Type: "GridData",
+                AddMethod: "setLayoutData",
+              },
+            ],
           },
         ];
       },

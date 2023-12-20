@@ -59,7 +59,9 @@
         "sap.ui.comp": {},
         "sap.ui.generic.app": {},
         "sap.ui.table": {},
-        "sap.ushell": {}
+        "sap.ushell": {},
+        "com.smod.ux.lib": {},
+        "com.smod.ux.mat": {}
       }
     },
     "contentDensities": {
@@ -101,35 +103,31 @@
       "routes": [
         {
           "pattern": "",
+          "name": "form",
+          "target": [
+            "form"
+          ]
+        },
+        {
+          "pattern": "design/{formId}",
           "name": "design",
           "target": [
             "design"
           ]
-        },
-        {
-          "pattern": "RequestSet/{objectId}",
-          "name": "object",
-          "target": [
-            "object"
-          ]
         }
       ],
       "targets": {
+        "form": {
+          "viewName": "Form",
+          "viewId": "form",
+          "viewLevel": 1,
+          "title": "{i18n>FORM_VIEW_TITLE}"
+        },
         "design": {
           "viewName": "Design",
           "viewId": "design",
           "viewLevel": 1,
-          "title": "{i18n>designViewTitle}"
-        },
-        "object": {
-          "viewName": "Object",
-          "viewId": "object",
-          "viewLevel": 2,
-          "title": "{i18n>objectViewTitle}"
-        },
-        "objectNotFound": {
-          "viewName": "ObjectNotFound",
-          "viewId": "objectNotFound"
+          "title": "{i18n>DESIGN_VIEW_TITLE}"
         },
         "notFound": {
           "viewName": "NotFound",

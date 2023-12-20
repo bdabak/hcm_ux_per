@@ -1,0 +1,98 @@
+<mvc:View
+    controllerName="com.thy.ux.per.controller.Form"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:md="com.smod.ux.mat.controls"
+    displayBlock="true"
+    height="100%"
+    busyIndicatorDelay="0"
+>
+    <Page showHeader="false">
+        <Table
+            id="idFormDesignTable"
+            items="{
+                path: '/FormHeaderSet'
+            }"
+            noDataText="{i18n>FORM_DESIGN_NOT_FOUND}"
+        >
+            <headerToolbar>
+                <OverflowToolbar>
+                    <content>
+                        <Title
+                            text="Form Listesi"
+                            level="H2"
+                        />
+                        <ToolbarSpacer />
+                        <md:IconButton
+                            press=".onNewForm"
+                            class="emphasizedButton"
+                            variant="Filled"
+                        >
+                                <md:Icon icon="add" />
+                        </md:IconButton>
+                    </content>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="Form Adı" />
+                </Column>
+                <Column
+                    minScreenWidth="Tablet"
+                    demandPopin="true"
+                >
+                    <Text text="Oluşturan" />
+                </Column>
+                <Column
+                    hAlign="Center"
+                    width="10rem"
+                >
+                    <Text text="İşlemler" />
+                </Column>
+            </columns>
+            <items>
+                <ColumnListItem
+                    vAlign="Middle"
+                >
+                    <cells>
+                        <ObjectIdentifier
+                            title="{FormTitle}"
+                            text="{FormId}"
+                        />
+                        <ObjectIdentifier
+                            title="{ChangedBy}"
+                            text="{
+                                path: 'ChangeDate',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: {
+                                    pattern: 'dd.MM.yyyy'
+                                }
+                            } - {
+                                path: 'ChangeTime',
+                                type: 'sap.ui.model.odata.type.Time',
+                                formatOptions: {
+                                    pattern: 'HH:mm'
+                                }
+                            }"
+                        />
+                        <HBox
+                            justifyContent="Center"
+                            alignItems="Center"
+                        >
+                            <md:IconButton press=".onEditForm" class="sapUiTinyMarginEnd" variant="Filled">
+                                <md:icons>
+                                    <md:Icon icon="edit" />
+                                </md:icons>
+                            </md:IconButton>
+                            <md:IconButton press=".onDeleteForm" class="rejectButton" variant="Filled">
+                                <md:icons>
+                                    <md:Icon icon="delete" />
+                                </md:icons>
+                            </md:IconButton>
+                        </HBox>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </Page>
+</mvc:View>

@@ -1,0 +1,45 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:md="com.smod.ux.mat.controls"
+>
+    <VBox
+        id="idDesignContainer"
+        class="sapUiTinyMargin designPanel sapUiContentPadding"
+    >
+        <Toolbar>
+            <Title
+                text="Form Tasarımı"                
+                titleStyle="H3"
+            />
+             <Title
+                id="idDesignContainerTitle1"         
+                titleStyle="H3"
+                visible="false"
+            />
+            <GenericTag id="idDesignContainerTitle" visible="false" status="Information" design="StatusIconHidden" />
+            <ToolbarSpacer />
+            <md:IconButton
+                press=".onSaveForm"
+                tooltip="{i18n>SAVE_ACTION}"
+                class="sapUiTinyMarginEnd smallButton"
+                variant="Filled"
+            >
+                <md:icons>
+                    <md:Icon icon="save" />
+                </md:icons>
+            </md:IconButton>
+            <md:IconButton
+                press=".onSaveAsForm"
+                class="emphasizedButton smallButton"
+                variant="Filled"
+                tooltip="{i18n>SAVE_AS_ACTION}"
+                visible="{= ${designView>/State} === 'EDIT' }"
+            >
+                <md:icons>
+                    <md:Icon icon="save_as" />
+                </md:icons>
+            </md:IconButton>
+        </Toolbar>
+    </VBox>
+</core:FragmentDefinition>

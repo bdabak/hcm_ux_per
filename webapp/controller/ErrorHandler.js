@@ -19,8 +19,8 @@ sap.ui.define([
             var oMessageManager = sap.ui.getCore().getMessageManager(),
                 oMessageModel = oMessageManager.getMessageModel(),
                 oResourceBundle = oComponent.getModel("i18n").getResourceBundle(),
-                sErrorText = oResourceBundle.getText("errorText"),
-                sMultipleErrors = oResourceBundle.getText("multipleErrorsText");
+                sErrorText = oResourceBundle.getText("ERROR_TEXT"),
+                sMultipleErrors = oResourceBundle.getText("MULTIPLE_ERRORS_TEXT");
 
             this._oComponent = oComponent;
             this._bMessageOpen = false;

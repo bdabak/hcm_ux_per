@@ -111,7 +111,7 @@ sap.ui.define([
 				text: this.getText(sMessage, aMessageParam),
 				title: this.getText(sTitle),
 				icon: sIcon,
-				showConfirmButton: false,
+				showConfirmButton: sIcon !== "success",
 			});
 
 		},
@@ -129,8 +129,6 @@ sap.ui.define([
 				html: null,
 				icon: "info",
 				position: "bottom",
-				timer: undefined,
-				timerProgressBar: false,
 				showConfirmButton: false,
 				confirmButtonText: this.getText("CONFIRM_ACTION", []),
 				confirmButtonColor: "#3085d6",
@@ -232,6 +230,49 @@ sap.ui.define([
 				}
 			});
 		},
+		openBusyFragment: function (sTextCode = null, aMessageParameters = []) {
+			var oDialog = this._getBusyFragment();
+			var that = this;
+			if (sTextCode) {
+			  oDialog.setText(this.getText(sTextCode, aMessageParameters));
+			} else {
+			  oDialog.setText(this.getText("PLEASE_WAIT", [] ));
+			}
+	
+			setTimeout(function () {
+			  oDialog.open();
+			}, 100);
+		  },
+	
+		  closeBusyFragment: function () {
+			var oDialog = this._getBusyFragment();
+			var that = this;
+			var _close = function () {
+			  oDialog.close();
+			};
+			setTimeout(_close, 500);
+		  },
+	
+
+		 /**
+		 * Convenience method for get generic Busy fragment
+		 * @private
+		 * @returns {com.thy.ux.per.fragment.BusyDialog} the router for this component
+		 */
+		  _getBusyFragment: function () {
+			  this.oBusyDialog = sap.ui.getCore().byId("GenericBusyDialog") || null;
+
+			  if (!this.oBusyDialog) {
+				this.oBusyDialog = sap.ui.xmlfragment(
+				  "com.thy.ux.per.fragment.GenericBusyDialog",
+				  this
+				);
+	  
+				this.getView().addDependent(this.oBusyDialog);
+			  } 
+	  
+			  return this.oBusyDialog;
+			},
     });
 
 });

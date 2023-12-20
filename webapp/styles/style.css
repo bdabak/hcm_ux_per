@@ -1,35 +1,45 @@
 .mainGrid {
   background-color: white;
-  border: 2px solid rgba(0, 0, 0, 0.4);
-  border-radius: 7px;
+  border: 2px solid rgb(207 207 207);
+  border-radius: 4px;
   box-sizing: border-box;
-  min-height: 300px;
+  min-height: 100%;
 }
 
 .emphasizedElement {
   border: 2px dashed red;
-  /* width: calc(100% - 8px) !important; */
-  min-height: 1.9rem !important;
+  min-height: 1.9rem;
 }
 
 .designPanel {
-  border: 2px dotted rgba(0, 0, 0, 0.4);
-  border-radius: 6px;
-  background-color: rgb(255 255 0 / 4%);
-  width: 70% !important;
+  border: 2px dashed rgb(229 216 107);
+  border-radius: 7px;
+  background-color: rgb(235 236 237);
+  width: 65% !important;
   padding: 0.3rem;
+}
+
+.designPanel div:has(.mainGrid){
+  height: 100%;
 }
 
 .configPanel {
   box-sizing: border-box;
-  width: 30% !important;
+  width: 35% !important;
   height: calc(100% - 1rem) !important;
   border-radius: 7px;
 }
 
-.configPanel,
-.configPanel *:not(.sapMBtnIcon) {
+.configPanel{
   font-size: 0.8rem !important;
+}
+
+.configPanel .sapMBtnIcon {
+    font-size: 0.8rem !important;
+}
+
+.configPanel .sapMBtnInner {
+    min-width: 1.7rem !important;
 }
 
 .swal2-container {
@@ -54,7 +64,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
 }
 
 .colored-toast.swal2-icon-success {
-  background-color: #61ca5c !important;
+  background-color: #48ad42 !important;
 }
 
 .colored-toast.swal2-icon-error {
@@ -83,4 +93,28 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
 
 .colored-toast .swal2-html-container {
   color: white;
+}
+
+.designContainer div.sapUiRespGridOverflowHidden[class*="sapUiRespGrid"]>div[class*="sapUiRespGridSpan"]{
+  overflow: visible !important;
+}
+
+.rejectButton{
+  --md-sys-color-primary: #ce261d;
+  background-color: #fff8f6;
+}
+
+.emphasizedButton{
+  --md-sys-color-primary: var(--md-ref-palette-tertiary35);
+  background-color: var(--md-ref-palette-secondary95);
+}
+
+.smallButton{
+  --md-filled-icon-button-container-width: 28px;
+  --md-filled-icon-button-container-height: 28px;
+  --md-filled-icon-button-icon-size: 18px;
+}
+
+.designPanel .sapMTB{
+  height: 2.75rem !important;
 }

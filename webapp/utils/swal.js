@@ -98,7 +98,7 @@
       i = "SweetAlert2:",
       s = (e) => e.charAt(0).toUpperCase() + e.slice(1),
       r = (e) => {
-        console.warn(`${i} ${"object" == typeof e ? e.join(" ") : e}`);
+        // console.warn(`${i} ${"object" == typeof e ? e.join(" ") : e}`);
       },
       a = (e) => {
         console.error(`${i} ${e}`);

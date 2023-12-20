@@ -1,26 +1,101 @@
 <core:FragmentDefinition
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:md="com.smod.ux.mat.controls"
     xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <VBox>
+        <Panel
+            headerText="Alan Özellikleri"
+            backgroundDesign="Transparent"
+            class="sapUiNoContentPadding"
+        >
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="4"
+                labelSpanS="4"
+                adjustLabelSpan="false"
+                emptySpanXL="0"
+                columnsXL="1"
+                columnsL="1"
+                singleContainerFullSize="false"
+            >
+                <f:content>
+                    <Label text="Alan tanıtıcısı" />
+                    <Input
+                        value="{designView>/FieldProperties/FieldId}"
+                        maxLength="40"
+                        change=".onFieldPropertyChanged"
+                        required="true"
+                    />
+                    <Label text="Alan adı" />
+                    <Input
+                        value="{designView>/FieldProperties/FieldDescription}"
+                        maxLength="80"
+                        change=".onFieldPropertyChanged"
+                        required="true"
+                    />
+                    <Label text="Veri alanı" />
+                    <CheckBox
+                        selected="{designView>/FieldProperties/Bindable}"
+                        select=".onFieldPropertyChanged"
+                    />
+                </f:content>
+            </f:SimpleForm>
+        </Panel>
         <Table
             alternateRowColors="true"
             backgroundDesign="Transparent"
-            items="{path:'designView>/ConfigOptions', factory: '.createConfigOptionRows', sorter: { path:'Group', group:true }}"
+            items="{
+                path: 'designView>/ConfigOptions',
+                factory: '.createConfigOptionRows',
+                sorter: {
+                    path: 'Group',
+                    group: true
+                }
+            }"
             sticky="ColumnHeaders,HeaderToolbar"
         >
             <headerToolbar>
                 <Toolbar visible="{= ${designView>/ConfigOptions}.length > 0 }">
                     <Title text="Konfigürasyon" />
                     <ToolbarSpacer />
-                    <Button
+                    <md:IconButton
+                        press=".onSaveConfiguration"
+                        class="sapUiTinyMarginEnd smallButton"
+                        variant="Filled"
+                    >
+                        <md:icons>
+                            <md:Icon icon="save" />
+                        </md:icons>
+                    </md:IconButton>
+                    <md:IconButton
+                        press=".onCloseConfiguration"
+                        class="rejectButton smallButton"
+                        variant="Filled"
+                    >
+                        <md:icons>
+                            <md:Icon icon="close" />
+                        </md:icons>
+                    </md:IconButton>
+                    <!-- <Button
                         press=".onSaveConfiguration"
                         icon="sap-icon://save"
+                        type="Emphasized"
+                        tooltip="Kaydet"
                     />
+                    <Button
+                        press=".onCloseConfiguration"
+                        icon="sap-icon://decline"
+                        type="Reject"
+                        tooltip="Kapat"
+                    /> -->
                 </Toolbar>
             </headerToolbar>
-
             <columns>
                 <Column>
                     <Title text="Özellik" />
@@ -30,12 +105,24 @@
                 </Column>
             </columns>
         </Table>
-        <Label text="CSS sınıfları" class="sapUiTinyMarginTop"/>
-        <MultiInput tokens="{designView>/CustomStyles}" class="sapUiTinyMarginBottom"  tokenUpdate=".onStyleUpdated" showValueHelp="false" showSuggestion="false" 
-        enableMultiLineMode="true" submit=".onStyleAdded"
-        id="idCustomStyleInput">
+        <Label
+            text="CSS sınıfları"
+            class="sapUiTinyMarginTop"
+        />
+        <MultiInput
+            tokens="{designView>/CustomStyles}"
+            class="sapUiSmallMarginTopBottom"
+            width="95%"
+            tokenUpdate=".onStyleUpdated"
+            submit=".onStyleAdded"
+            id="idCustomStyleInput"
+            showValueHelp="false"
+        >
             <tokens>
-                <Token  key="{designView>Key}" text="{designView>Value}"  />
+                <Token
+                    key="{designView>Key}"
+                    text="{designView>Value}"
+                />
             </tokens>
         </MultiInput>
     </VBox>

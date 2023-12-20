@@ -1,0 +1,28 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+     xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+>
+  <l:ResponsiveSplitter class="configPanel sapUiTinyMarginTopBottom sapUiTinyMarginBegin">
+                        <l:PaneContainer orientation="Vertical">
+                            <l:SplitPane requiredParentWidth="300">
+                                <l:layoutData>
+                                    <l:SplitterLayoutData size="{= ${designView>/ConfigOptions}.length > 0 ? '50%' : '100%' }" />
+                                </l:layoutData>
+                                <core:Fragment
+                                    type="XML"
+                                    fragmentName="com.thy.ux.per.fragment.ConfigTree"
+                                />
+                            </l:SplitPane>
+                            <l:SplitPane requiredParentWidth="300">
+                                <l:layoutData>
+                                    <l:SplitterLayoutData size="{= ${designView>/ConfigOptions}.length > 0 ? '50%' : '0%' }" />
+                                </l:layoutData>
+                                <core:Fragment
+                                    type="XML"
+                                    fragmentName="com.thy.ux.per.fragment.ConfigOptions"
+                                />
+                            </l:SplitPane>
+                        </l:PaneContainer>
+                    </l:ResponsiveSplitter>
+</core:FragmentDefinition>
