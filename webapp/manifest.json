@@ -7,8 +7,8 @@
     "applicationVersion": {
       "version": "0.0.1"
     },
-    "title": "{{appTitle}}",
-    "description": "{{appDescription}}",
+    "title": "{{APP_TITLE}}",
+    "description": "{{APP_DESCRIPTION}}",
     "resources": "resources.json",
     "sourceTemplate": {
       "id": "@sap/generator-fiori:worklist",
@@ -114,6 +114,20 @@
           "target": [
             "design"
           ]
+        },
+        {
+          "pattern": "requestlist",
+          "name": "requestlist",
+          "target": [
+            "requestlist"
+          ]
+        },
+        {
+          "pattern": "requestdetail/{requestId}",
+          "name": "requestdetail",
+          "target": [
+            "requestdetail"
+          ]
         }
       ],
       "targets": {
@@ -126,8 +140,20 @@
         "design": {
           "viewName": "Design",
           "viewId": "design",
-          "viewLevel": 1,
+          "viewLevel": 2,
           "title": "{i18n>DESIGN_VIEW_TITLE}"
+        },
+        "requestlist": {
+          "viewName": "RequestList",
+          "viewId": "requestlist",
+          "viewLevel": 1,
+          "title": "{i18n>REQUEST_LIST_VIEW_TITLE}"
+        },
+        "requestdetail": {
+          "viewName": "RequestDetail",
+          "viewId": "requestdetail",
+          "viewLevel": 2,
+          "title": "{i18n>REQUEST_DETAIL_VIEW_TITLE}"
         },
         "notFound": {
           "viewName": "NotFound",

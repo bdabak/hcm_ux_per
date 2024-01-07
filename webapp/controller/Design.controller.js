@@ -6,6 +6,7 @@ sap.ui.define(
     "sap/ui/core/Fragment",
     "sap/f/GridContainer",
     "sap/f/GridContainerSettings",
+    "com/thy/ux/per/controls/FormWizard",
     "com/thy/ux/per/model/ComponentPool",
     "../model/formatter",
   ],
@@ -15,6 +16,7 @@ sap.ui.define(
     Fragment,
     GridContainer,
     GridContainerSettings,
+    FormWizard,
     ComponentPool,
     formatter
   ) {
@@ -100,13 +102,23 @@ sap.ui.define(
 
           aOptions.forEach((oOpt) => {
             if (oOpt.Value !== null) {
-              if (
-                Array.isArray(oOpt.Value) ||
-                typeof oOpt.Value === "object" ||
-                oOpt.Value === oOpt.DefaultValue
-              ) {
+
+              if(oOpt.Value === oOpt.DefaultValue){
                 return;
               }
+
+              if (
+                Array.isArray(oOpt.Value) ||
+                typeof oOpt.Value === "object"
+              ) {
+                let iLen = Array.isArray(oOpt.Value) ? oOpt.Value.length : Object.keys(oOpt.Value.length) || 0;
+
+                if(iLen <= 0 ){
+                  return;
+                }
+                oOpt.Value = JSON.stringify(oOpt.Value);
+              }
+              
               var oProp = {
                 FormId: sFormId,
                 ElementUid: oComp.ElementUid,
@@ -403,6 +415,20 @@ sap.ui.define(
         });
         var sType = oContext.getProperty("Type");
         switch (sType) {
+          case "object":
+            oEl = new sap.m.TextArea({
+              value: {
+                path: "designView>Value",
+                formatter: (oObj)=>{
+                  return JSON.stringify(oObj)
+                }
+              },
+              rows:3,
+              width:"100%",
+              change: this.onSaveConfiguration.bind(this),
+            });
+
+            break;
           case "boolean":
             oEl = new sap.m.CheckBox({
               selected: {
@@ -511,6 +537,9 @@ sap.ui.define(
         aOptions.forEach((o) => {
           try {
             switch (o.Type) {
+              case "object":
+                sVal = _.cloneDeep(JSON.parse(o.Value));
+                break;
               case "int":
                 sVal = parseInt(o.Value, 10);
                 break;
@@ -782,7 +811,7 @@ sap.ui.define(
           oViewModel.setProperty("/State", "NEW");
           oViewModel.setProperty("/FormId", null);
           this._currentFormId = "";
-          this._createRootGrid();
+          this._createRootContainer();
           this.byId("idDesignContainerTitle").unbindProperty("text");
           this.byId("idDesignContainerTitle").setVisible(false);
         } else {
@@ -827,10 +856,10 @@ sap.ui.define(
         oViewModel.setProperty("/ComponentList", []);
         oViewModel.setProperty("/FormTitle", "");
       },
-      _createRootGrid: function (oData = null) {
+      _createRootContainer: function (oData = null) {
         var oBox = this.byId("idDesignContainer");
-        var oGrid =
-          this.byId("idDesignGrid") || sap.ui.getCore().byId("idDesignGrid");
+        var oRoot =
+          this.byId("idDesignPaneRoot") || sap.ui.getCore().byId("idDesignPaneRoot");
         var oViewModel = this.getModel("designView");
 
         var sRootUid =
@@ -844,44 +873,35 @@ sap.ui.define(
         }
 
         try {
-          if (oGrid && oGrid?.destroy) {
-            oGrid.destroy();
+          if (oRoot && oRoot?.destroy) {
+            oRoot.destroy();
           }
 
-          oGrid = new GridContainer("idDesignGrid", {
-            // width: "100%",
-            layout: new GridContainerSettings({
-              columns: 1,
-              rowSize: "3rem",
-              columnSize: "100%",
-              gap: "0.5rem",
-            }),
-          })
-            .data("CompType", "GridContainer")
-            .addStyleClass("mainGrid")
-            .addStyleClass("sapUiTinyMarginTop");
+          oRoot = new FormWizard("idDesignPaneRoot")
+            .data("CompType", "FormWizard")
+            .addStyleClass("mainGrid");
 
-          oBox.addItem(oGrid);
+          oBox.addItem(oRoot);
 
           oViewModel.setProperty("/ComponentTree", [
             {
-              ElementId: oGrid.getId(),
-              Type: "GridContainer",
+              ElementId: oRoot.getId(),
+              Type: "FormWizard",
               ParentId: null,
               AggregationName: null,
-              Description: "Root Grid",
+              Description: "Root Container",
               Children: [],
             },
           ]);
           oViewModel.setProperty("/ComponentList", [
             {
               ElementUid: sRootUid,
-              ElementId: oGrid.getId(),
-              FieldId: "FieldRootGrid0",
-              FieldDescription: "Root Grid",
+              ElementId: oRoot.getId(),
+              FieldId: "FieldRootContainer0",
+              FieldDescription: "Root Container",
               Bindable: false,
-              Type: "GridContainer",
-              Component: oGrid,
+              Type: "FormWizard",
+              Component: oRoot,
               Properties: null,
               ParentId: null,
               ParentUid: null,
@@ -894,21 +914,21 @@ sap.ui.define(
         }
       },
       _getRootGridUid: function (oData) {
-        var oGrid = oData.FormComponentSet.results.find((oComp) => {
-          return !oComp.ParentUid && oComp.Type === "GridContainer";
+        var oRoot = oData.FormComponentSet.results.find((oComp) => {
+          return !oComp.ParentUid && oComp.Type === "FormWizard";
         });
 
-        return oGrid.ElementUid;
+        return oRoot.ElementUid;
       },
       _constructUI: function (oData) {
-        var bRoot = this._createRootGrid(oData);
+        var bRoot = this._createRootContainer(oData);
 
         if (!bRoot) {
           return;
         }
         try {
           oData.FormComponentSet.results.forEach((oComp) => {
-            if (!oComp.ParentUid && oComp.Type === "GridContainer") {
+            if (!oComp.ParentUid && oComp.Type === "FormWizard") {
               //Do not add root again
               return;
             } else {
@@ -1067,6 +1087,9 @@ sap.ui.define(
               aCustomStyleClasses.push(oProp.PropertyValue);
             } else {
               switch (oProp.PropertyType) {
+                case "object":
+                  oSavedProps[oProp.PropertyName] = _.cloneDeep(JSON.parse(oProp.PropertyValue));
+                  break;
                 case "boolean":
                   oSavedProps[oProp.PropertyName] =
                     oProp.PropertyValue === "true";
@@ -1183,9 +1206,7 @@ sap.ui.define(
             `id${sChildType}Component${
               crypto.getRandomValues(new Uint32Array(1))[0]
             }`,
-            {
-              ...oChildComp.DefaultProps,
-            }
+            _.cloneDeep(oChildComp.DefaultProps)
           );
 
           if (oAggr?.AddMethod && oParent[oAggr.AddMethod] && oChildInstance) {
@@ -1233,7 +1254,7 @@ sap.ui.define(
               Component: oChildInstance,
               Type: sChildType,
               AggregationName: oAggr.Name,
-              Properties: { ...oChildComp.DefaultProps },
+              Properties: _.cloneDeep(oChildComp.DefaultProps),
             });
 
             oViewModel.setProperty("/ComponentList", aCompList);
@@ -1316,7 +1337,7 @@ sap.ui.define(
         if (!this._oAddMenu) {
           this._oAddMenu = Fragment.load({
             id: this.getView().getId(),
-            name: "com.thy.ux.per.fragment.AddMenu",
+            name: "com.thy.ux.per.fragment.design.AddMenu",
             controller: this,
           }).then(
             function (oMenu) {
@@ -1525,15 +1546,15 @@ sap.ui.define(
       //   // 	drop: this.onDrop.bind(this)
       //   // }));
 
-      //   var oGrid = this.byId("idDesignGrid");
-      //   // var oGrid = this.byId("idDesignForm");
-      //   // oGrid.addDragDropConfig(
+      //   var oRoot = this.byId("idDesignPaneRoot");
+      //   // var oRoot = this.byId("idDesignForm");
+      //   // oRoot.addDragDropConfig(
       //   //   new DragInfo({
       //   //     sourceAggregation: "items",
       //   //   })
       //   // );
 
-      //   oGrid.addDragDropConfig(
+      //   oRoot.addDragDropConfig(
       //     new DropInfo({
       //       groupName: "addToMainGrid",
       //       drop: this.onDrop.bind(this),
@@ -1541,14 +1562,14 @@ sap.ui.define(
       //     })
       //   );
 
-      //   // oGrid.addDragDropConfig(new GridDropInfo({
+      //   // oRoot.addDragDropConfig(new GridDropInfo({
       //   // 	targetAggregation: "items",
       //   // 	dropPosition: DropPosition.Between,
       //   // 	dropLayout: DropLayout.Horizontal,
       //   // 	dropIndicatorSize: this._getDropIndicatorSize.bind(this),
       //   // 	drop: this.onDrop.bind(this)
       //   // }));
-      //   // oGrid.addDragDropConfig(new GridDropInfo({
+      //   // oRoot.addDragDropConfig(new GridDropInfo({
       //   // 	targetAggregation: "content",
       //   // 	dropPosition: DropPosition.Between,
       //   // 	dropLayout: DropLayout.Horizontal,

@@ -1,3 +1,13 @@
+.pitPage {
+  font-family: "Roboto", sans-serif;
+}
+
+.pitPage .sapMTitle,
+.pitPage .sapMText,
+.pitPage .sapMLabel {
+  font-family: "Roboto", sans-serif !important;
+}
+
 .mainGrid {
   background-color: white;
   border: 2px solid rgb(207 207 207);
@@ -15,11 +25,13 @@
   border: 2px dashed rgb(229 216 107);
   border-radius: 7px;
   background-color: rgb(235 236 237);
-  width: 65% !important;
+  width: 65%;
   padding: 0.3rem;
+  overflow: auto;
+  resize: horizontal;
 }
 
-.designPanel div:has(.mainGrid){
+.designPanel div:has(.mainGrid) {
   height: 100%;
 }
 
@@ -30,16 +42,20 @@
   border-radius: 7px;
 }
 
-.configPanel{
+.configPanel {
   font-size: 0.8rem !important;
 }
 
 .configPanel .sapMBtnIcon {
-    font-size: 0.8rem !important;
+  font-size: 0.8rem !important;
 }
 
 .configPanel .sapMBtnInner {
-    min-width: 1.7rem !important;
+  min-width: 1.7rem !important;
+}
+
+.fieldPropertiesForm .sapUiFormToolbar > div:first-child {
+  padding: 0 0.5rem 0 1rem !important;
 }
 
 .swal2-container {
@@ -95,26 +111,28 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
   color: white;
 }
 
-.designContainer div.sapUiRespGridOverflowHidden[class*="sapUiRespGrid"]>div[class*="sapUiRespGridSpan"]{
+.designContainer
+  div.sapUiRespGridOverflowHidden[class*="sapUiRespGrid"]
+  > div[class*="sapUiRespGridSpan"] {
   overflow: visible !important;
 }
 
-.rejectButton{
+.rejectButton {
   --md-sys-color-primary: #ce261d;
   background-color: #fff8f6;
 }
 
-.emphasizedButton{
+.emphasizedButton {
   --md-sys-color-primary: var(--md-ref-palette-tertiary35);
   background-color: var(--md-ref-palette-secondary95);
 }
 
-.smallButton{
+.smallButton {
   --md-filled-icon-button-container-width: 28px;
   --md-filled-icon-button-container-height: 28px;
   --md-filled-icon-button-icon-size: 18px;
 }
 
-.designPanel .sapMTB{
+.designPanel .sapMTB {
   height: 2.75rem !important;
 }

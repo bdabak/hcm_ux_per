@@ -11,12 +11,13 @@
   "main": "webapp/index.html",
   "devDependencies": {
     "@sap-ux/ui5-middleware-fe-mockserver": "2",
-    "@sap/ux-ui5-tooling": "1",
+    "@sap/ux-ui5-tooling": "^1.12.1",
     "@ui5/cli": "^3.7.1"
   },
   "scripts": {
-    "start": "fiori run --open \"test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#comthyuxper-display\"",
-    "start-local": "fiori run --config ./ui5-local.yaml --open \"test/flpSandbox.html?sap-client=300&sap-ui-xx-viewCache=false#comthyuxper-display\"",
+    "start": "fiori run --open \"test/flpSandbox.html?sap-language=TR&sap-client=300&sap-ui-xx-viewCache=false#comthyuxper-display\"",
+    "requestlist": "fiori run --open \"test/flpSandbox.html?sap-language=TR&sap-client=300&sap-ui-xx-viewCache=false#comthyuxper-display&/requestlist\"",
+    "start-local": "fiori run --config ./ui5-local.yaml --open \"test/flpSandbox.html?sap-language=TR&sap-client=300&sap-ui-xx-viewCache=false#comthyuxper-display\"",
     "build": "ui5 build --config=ui5.yaml --clean-dest --dest dist",
     "deploy": "fiori verify",
     "deploy-config": "fiori add deploy-config",

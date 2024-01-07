@@ -1,20 +1,16 @@
 <mvc:View
-    controllerName="com.thy.ux.per.controller.Form"
+    controllerName="com.thy.ux.per.controller.RequestList"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:md="com.smod.ux.mat.controls"
     displayBlock="true"
+    xmlns:md="com.smod.ux.mat.controls"
     height="100%"
     busyIndicatorDelay="0"
-    class="pitPage"
 >
     <Page showHeader="false">
         <Table
-            id="idFormDesignTable"
-            items="{
-                path: '/FormHeaderSet'
-            }"
-            noDataText="{i18n>FORM_DESIGN_NOT_FOUND}"
+            items="{/RequestSet}"
+            noDataText="{i18n>REQUEST_LIST_EMPTY}"
         >
             <headerToolbar>
                 <OverflowToolbar>
@@ -24,19 +20,34 @@
                             level="H2"
                         />
                         <ToolbarSpacer />
-                        <md:IconButton
-                            press=".onNewForm"
+                        <md:Button
+                            press=".onNewRequest"
+                            variant="Elevated"
+                            text="{i18n>NEW_ACTION}"
+                        >
+                            <md:leadingIcon>
+                                <md:Icon
+                                    icon="add"
+                                    tooltip="Yeni talep"
+                                />
+                            </md:leadingIcon>
+                        </md:Button>
+                        <!-- <md:IconButton
+                            press=".onNewRequest"
                             class="emphasizedButton"
                             variant="Filled"
                         >
-                                <md:Icon icon="add" />
-                        </md:IconButton>
+                            <md:Icon
+                                icon="add"
+                                tooltip="Yeni talep"
+                            />
+                        </md:IconButton> -->
                     </content>
                 </OverflowToolbar>
             </headerToolbar>
             <columns>
                 <Column>
-                    <Text text="Form Adı" />
+                    <Text text="Talep Başlığı" />
                 </Column>
                 <Column
                     minScreenWidth="Tablet"
@@ -52,24 +63,22 @@
                 </Column>
             </columns>
             <items>
-                <ColumnListItem
-                    vAlign="Middle"
-                >
+                <ColumnListItem vAlign="Middle">
                     <cells>
                         <ObjectIdentifier
-                            title="{FormTitle}"
-                            text="{FormId}"
+                            title="{RequestTitle}"
+                            text="{RequestId}"
                         />
                         <ObjectIdentifier
-                            title="{ChangedBy}"
+                            title="{CreatedBy}"
                             text="{
-                                path: 'ChangeDate',
+                                path: 'CreationDate',
                                 type: 'sap.ui.model.odata.type.DateTime',
                                 formatOptions: {
                                     pattern: 'dd.MM.yyyy'
                                 }
                             } - {
-                                path: 'ChangeTime',
+                                path: 'CreationTime',
                                 type: 'sap.ui.model.odata.type.Time',
                                 formatOptions: {
                                     pattern: 'HH:mm'
@@ -80,12 +89,20 @@
                             justifyContent="Center"
                             alignItems="Center"
                         >
-                            <md:IconButton press=".onEditForm" class="sapUiTinyMarginEnd" variant="Filled">
+                            <md:IconButton
+                                press=".onEditRequest"
+                                class="sapUiTinyMarginEnd"
+                                variant="Filled"
+                            >
                                 <md:icons>
                                     <md:Icon icon="edit" />
                                 </md:icons>
                             </md:IconButton>
-                            <md:IconButton press=".onDeleteForm" class="rejectButton" variant="Filled">
+                            <md:IconButton
+                                press=".onDeleteRequest"
+                                class="rejectButton"
+                                variant="Filled"
+                            >
                                 <md:icons>
                                     <md:Icon icon="delete" />
                                 </md:icons>

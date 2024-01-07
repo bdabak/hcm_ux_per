@@ -1,0 +1,58 @@
+<mvc:View
+    xmlns:core="sap.ui.core"
+    controllerName="com.thy.ux.per.controller.RequestDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:thy="com.thy.ux.per.controls"
+    displayBlock="true"
+    xmlns:md="com.smod.ux.mat.controls"
+    height="100%"
+    busyIndicatorDelay="0"
+>
+    <Page
+        showHeader="true"
+        title="{detailView>/PageTitle}"
+        showNavButton="true"
+        navButtonPress=".onNavBack"
+    >
+        <thy:Wizard activeStep="1" id="idRequestWizard"
+            nextStep=".onWizardNextStep"
+          
+        >
+            <thy:steps>
+                <thy:WizardStep
+                    number="1"
+                    title="Talep Başlığı"
+                    description="Talep türü ve başlığını giriniz"
+                />
+                <thy:WizardStep
+                    number="2"
+                    title="Talep Detayları"
+                    description="Talep detayları ve diğer veriler"
+                />
+                <thy:WizardStep
+                    number="3"
+                    title="Talep Özeti"
+                    description="Talep özeti ve gönderim"
+                />
+            </thy:steps>
+            <thy:stepContents>
+                <thy:WizardStepContent number="1">
+                    <thy:content>
+                        <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.request.RequestHeader" />
+                    </thy:content>
+                </thy:WizardStepContent>
+                <thy:WizardStepContent number="2">
+                    <thy:content>
+                        <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.request.RequestDetails" />
+                    </thy:content>
+                </thy:WizardStepContent>
+                <thy:WizardStepContent number="3">
+                    <thy:content>
+                        <Text text="Step 3" />
+                    </thy:content>
+                </thy:WizardStepContent>
+            </thy:stepContents>
+        </thy:Wizard>
+    </Page>
+</mvc:View>

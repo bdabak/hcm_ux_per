@@ -3,10 +3,14 @@
     xmlns:core="sap.ui.core"
     xmlns:md="com.smod.ux.mat.controls"
 >
+     <!-- <md:FieldBox label="Deneme">
+            <Text text="Text" />
+        </md:FieldBox> -->
     <VBox
         id="idDesignContainer"
         class="sapUiTinyMargin designPanel sapUiContentPadding"
-    >
+    >   
+       
         <Toolbar>
             <Title
                 text="Form Tasarımı"                

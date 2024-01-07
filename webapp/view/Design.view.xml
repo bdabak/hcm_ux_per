@@ -4,6 +4,7 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
     displayBlock="true"
+    class="pitPage"
 >
     <Page showHeader="false">
         <content>
@@ -16,11 +17,11 @@
                 <items>
                     <core:Fragment
                         type="XML"
-                        fragmentName="com.thy.ux.per.fragment.SidePane"
+                        fragmentName="com.thy.ux.per.fragment.design.SidePane"
                     />
                     <core:Fragment
                         type="XML"
-                        fragmentName="com.thy.ux.per.fragment.DesignPane"
+                        fragmentName="com.thy.ux.per.fragment.design.DesignPane"
                     />
                 </items>
             </HBox>

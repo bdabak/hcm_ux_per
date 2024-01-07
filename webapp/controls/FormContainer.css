@@ -1,0 +1,11 @@
+.smod-form-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.smod-form-container-title{
+    font-weight: 500 !important;
+    margin-bottom: 0.5rem !important;
+    /* color: #181C32 !important; */
+}

@@ -11,7 +11,7 @@
                                 </l:layoutData>
                                 <core:Fragment
                                     type="XML"
-                                    fragmentName="com.thy.ux.per.fragment.ConfigTree"
+                                    fragmentName="com.thy.ux.per.fragment.design.ConfigTree"
                                 />
                             </l:SplitPane>
                             <l:SplitPane requiredParentWidth="300">
@@ -20,7 +20,7 @@
                                 </l:layoutData>
                                 <core:Fragment
                                     type="XML"
-                                    fragmentName="com.thy.ux.per.fragment.ConfigOptions"
+                                    fragmentName="com.thy.ux.per.fragment.design.ConfigOptions"
                                 />
                             </l:SplitPane>
                         </l:PaneContainer>

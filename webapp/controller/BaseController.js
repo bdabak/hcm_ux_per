@@ -137,12 +137,12 @@ sap.ui.define([
 				cancelButtonColor: "#d33",
 				showCloseButton: false,
 				toast: true,
-				timer: 3000,
+				timer: 5000,
 				timerProgressBar: false,
-				customClass: {
-					popup: "colored-toast"
-				},
-				iconColor: "white",
+				// customClass: {
+				// 	popup: "colored-toast"
+				// },
+				// iconColor: "white",
 				backdrop:false
 			};
 
@@ -264,7 +264,7 @@ sap.ui.define([
 
 			  if (!this.oBusyDialog) {
 				this.oBusyDialog = sap.ui.xmlfragment(
-				  "com.thy.ux.per.fragment.GenericBusyDialog",
+				  "com.thy.ux.per.fragment.design.GenericBusyDialog",
 				  this
 				);
 	  

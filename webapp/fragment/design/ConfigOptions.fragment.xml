@@ -6,47 +6,75 @@
     xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <VBox>
-        <Panel
+        <!-- <Panel
             headerText="Alan Özellikleri"
             backgroundDesign="Transparent"
             class="sapUiNoContentPadding"
+        >    -->
+        <f:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3"
+            labelSpanL="3"
+            labelSpanM="4"
+            labelSpanS="4"
+            adjustLabelSpan="false"
+            emptySpanXL="0"
+            columnsXL="1"
+            columnsL="1"
+            singleContainerFullSize="false"
+            class="sapUiNoContentPadding fieldPropertiesForm"
         >
-            <f:SimpleForm
-                editable="true"
-                layout="ResponsiveGridLayout"
-                labelSpanXL="3"
-                labelSpanL="3"
-                labelSpanM="4"
-                labelSpanS="4"
-                adjustLabelSpan="false"
-                emptySpanXL="0"
-                columnsXL="1"
-                columnsL="1"
-                singleContainerFullSize="false"
-            >
-                <f:content>
-                    <Label text="Alan tanıtıcısı" />
-                    <Input
-                        value="{designView>/FieldProperties/FieldId}"
-                        maxLength="40"
-                        change=".onFieldPropertyChanged"
-                        required="true"
-                    />
-                    <Label text="Alan adı" />
-                    <Input
-                        value="{designView>/FieldProperties/FieldDescription}"
-                        maxLength="80"
-                        change=".onFieldPropertyChanged"
-                        required="true"
-                    />
-                    <Label text="Veri alanı" />
-                    <CheckBox
-                        selected="{designView>/FieldProperties/Bindable}"
-                        select=".onFieldPropertyChanged"
-                    />
-                </f:content>
-            </f:SimpleForm>
-        </Panel>
+            <!-- <f:title>
+                    <core:Title text="Alan Özellikleri" />
+                </f:title> -->
+            <f:toolbar>
+                <Toolbar>
+                    <Title text="Alan Özellikleri" />
+                    <ToolbarSpacer />
+                    <md:IconButton
+                        press=".onSaveConfiguration"
+                        class="smallButton"
+                        variant="Filled"
+                    >
+                        <md:icons>
+                            <md:Icon icon="save" />
+                        </md:icons>
+                    </md:IconButton>
+                    <md:IconButton
+                        press=".onCloseConfiguration"
+                        class="rejectButton smallButton"
+                        variant="Filled"
+                    >
+                        <md:icons>
+                            <md:Icon icon="close" />
+                        </md:icons>
+                    </md:IconButton>
+                </Toolbar>
+            </f:toolbar>
+            <f:content>
+                <Label text="Alan tanıtıcısı" />
+                <Input
+                    value="{designView>/FieldProperties/FieldId}"
+                    maxLength="40"
+                    change=".onFieldPropertyChanged"
+                    required="true"
+                />
+                <Label text="Alan adı" />
+                <Input
+                    value="{designView>/FieldProperties/FieldDescription}"
+                    maxLength="80"
+                    change=".onFieldPropertyChanged"
+                    required="true"
+                />
+                <Label text="Veri alanı" />
+                <CheckBox
+                    selected="{designView>/FieldProperties/Bindable}"
+                    select=".onFieldPropertyChanged"
+                />
+            </f:content>
+        </f:SimpleForm>
+        <!-- </Panel> -->
         <Table
             alternateRowColors="true"
             backgroundDesign="Transparent"
@@ -66,7 +94,7 @@
                     <ToolbarSpacer />
                     <md:IconButton
                         press=".onSaveConfiguration"
-                        class="sapUiTinyMarginEnd smallButton"
+                        class="smallButton"
                         variant="Filled"
                     >
                         <md:icons>

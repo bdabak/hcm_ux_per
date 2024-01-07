@@ -1,5 +1,9 @@
-sap.ui.define(["com/thy/ux/per/components/InputField"], function (
-	InputField) {
+sap.ui.define([
+  "com/thy/ux/per/controls/FormWizard",
+  "com/thy/ux/per/controls/FormContainer"], function (
+	FormWizard,
+	FormContainer
+  ) {
   "use strict";
   return (
     "com.thy.ux.per.model.ComponentPool",
@@ -8,16 +12,33 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
         return [
           {
             Group: "Container",
-            Class: sap.f.GridContainer,
-            Type: "GridContainer",
-            Description: "Grid Container",
+            Class: com.thy.ux.per.controls.FormWizard,
+            Type: "FormWizard",
+            Description: "Form Wizard",
             Aggregations: [
-              { Name: "items", Type: "MdTabContainer", AddMethod: "addItem" },
+              { Name: "items", Type: "PerFormContainer", AddMethod: "addItem" },
               { Name: "items", Type: "Panel", AddMethod: "addItem" },
-              { Name: "items,", Type: "Form", AddMethod: "addItem" },
-              { Name: "items", Type: "HBox", AddMethod: "addItem" },
-              { Name: "items", Type: "VBox", AddMethod: "addItem" },
-              { Name: "items", Type: "FlexBox", AddMethod: "addItem" },
+            ],
+          },
+          {
+            Group: "Container",
+            Class: com.thy.ux.per.controls.FormContainer,
+            Type: "PerFormContainer",
+            Description: "Form Container",
+            DefaultProps:{
+              title: "Default Form Title"
+            },
+            Aggregations: [
+              { Name: "items", Type: "MdTextField",   AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelect",      AddMethod: "addItem" },
+              { Name: "items", Type: "MdCheckBox",    AddMethod: "addItem" },
+              { Name: "items", Type: "MdRadioGroup",  AddMethod: "addItem" },
+              { Name: "items", Type: "MdMultiSelect", AddMethod: "addItem" },
+              { Name: "items", Type: "MdChipSet",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdDivider",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdSwitch",      AddMethod: "addItem" },
+              { Name: "items", Type: "HBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "VBox",          AddMethod: "addItem" },
             ],
           },
           {
@@ -85,11 +106,9 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
                 Type: "Toolbar",
                 AddMethod: "setHeaderToolbar",
               },
-              { Name: "content", Type: "Panel", AddMethod: "addContent" },
-              { Name: "content", Type: "Form", AddMethod: "addContent" },
+              { Name: "content", Type: "PerFormContainer", AddMethod: "addContent" },
               { Name: "content", Type: "HBox", AddMethod: "addContent" },
               { Name: "content", Type: "VBox", AddMethod: "addContent" },
-              { Name: "content", Type: "FlexBox", AddMethod: "addContent" },
             ],
           },
           {
@@ -342,6 +361,9 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
                 AddMethod: "setLayoutData",
               },
             ],
+            BindingProperties:{
+              ValueField: {Name: "value", Type: "string", Multiple: false }
+            }
           },
           {
             Group: "Element",
@@ -359,7 +381,11 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
                 AddMethod: "setLayoutData",
               },
             ],
+            BindingProperties:{
+              ValueField: {Name: "value", Type: "string", Multiple: false }
+            }
           },
+          
           {
             Group: "Element",
             Class: com.smod.ux.mat.controls.Select,
@@ -383,13 +409,12 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
                 Name: "options",
                 Type: "MdSelectOption",
                 AddMethod: "addOption",
-              },
-              {
-                Name: "layoutData",
-                Type: "GridData",
-                AddMethod: "setLayoutData",
-              },
+              }
             ],
+            BindingProperties:{
+              ValueField: {Name: "selectedKey", Type: "string", Multiple: false },
+              ValueListAggregation: {Name: "options", KeyField: "key", ValueField: "value" }
+            }
           },
           {
             Group: "Element",
@@ -399,13 +424,10 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
             DefaultProps: {
               label: "Default Label",
             },
-            Aggregations: [
-              {
-                Name: "layoutData",
-                Type: "GridData",
-                AddMethod: "setLayoutData",
-              },
-            ],
+            Aggregations: [],
+            BindingProperties:{
+              ValueField: {Name: "checked", Type: "boolean", Multiple: false }
+            }
           },
           {
             Group: "Element",
@@ -422,6 +444,10 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
                 AddMethod: "addItem",
               },
             ],
+            BindingProperties:{
+              ValueField: {Name: "value", Type: "string", Multiple: false },
+              ValueListAggregation: {Name: "items", KeyField: "value", ValueField: "checked" }
+            }
           },
           {
             Group: "Element",
@@ -430,6 +456,9 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
             Description: "Radio Button (MD)",
             DefaultProps: {
               checked: false,
+            },
+            BindingProperties:{
+              ValueField: {Name: "checked", Type: "object", Multiple: true }
             }
           },
           {
@@ -453,17 +482,80 @@ sap.ui.define(["com/thy/ux/per/components/InputField"], function (
           },
           {
             Group: "Element",
-            Class: com.thy.ux.per.components.InputField,
-            Type: "SmodInput",
-            Description: "Custom Input",
+            Class: com.smod.ux.mat.controls.ChipSet,
+            Type: "MdChipSet",
+            Description: "Chip Set (MD)",
             Aggregations: [
               {
-                Name: "layoutData",
-                Type: "GridData",
-                AddMethod: "setLayoutData",
+                Name: "chips",
+                Type: "MdChip",
+                AddMethod: "addChip",
               },
             ],
+            BindingProperties:{
+              ValueField: {Name: "selectedKeys", Type: "object", Multiple: true },
+              ValueListAggregation: {Name: "chips", KeyField: "key", ValueField: "label" }
+            }
           },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.MultiSelect,
+            Type: "MdMultiSelect",
+            Description: "Multi Select (MD)",
+            DefaultProps: {
+              label: "Multi select",
+              valueSet: [
+                {key: "01", value: "Value 1", checked: false},
+                {key: "02", value: "Value 2", checked: false}
+              ],
+              selectedKeys:[]
+            },
+            BindingProperties:{
+              ValueField: {Name: "selectedKeys", Type: "object", Multiple: true },
+              ValueListField: {Name: "valueSet", LabelField: "value", KeyField: "key", ValueField: "checked" }
+            }
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Switch,
+            Type: "MdSwitch",
+            Description: "Switch (MD)",
+            DefaultProps: {
+              label: "Switch"
+            },
+            BindingProperties:{
+              ValueField: {Name: "selected", Type: "boolean", Multiple: false }
+            }
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Divider,
+            Type: "MdDivider",
+            Description: "Divider (MD)",
+          },
+          {
+            Group: "Element",
+            Class: com.smod.ux.mat.controls.Chip,
+            Type: "MdChip",
+            Description: "Chip",
+            DefaultProps: {
+              selected: false,
+              label: "Chip text"
+            }
+          },
+          // {
+          //   Group: "Element",
+          //   Class: com.thy.ux.per.components.InputField,
+          //   Type: "SmodInput",
+          //   Description: "Custom Input",
+          //   Aggregations: [
+          //     {
+          //       Name: "layoutData",
+          //       Type: "GridData",
+          //       AddMethod: "setLayoutData",
+          //     },
+          //   ],
+          // },
           {
             Group: "Element",
             Class: sap.m.Label,
