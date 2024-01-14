@@ -1,171 +1,173 @@
 {
-  "_version": "1.17.0",
-  "sap.app": {
-    "id": "com.thy.ux.per",
-    "type": "application",
-    "i18n": "i18n/i18n.properties",
-    "applicationVersion": {
-      "version": "0.0.1"
-    },
-    "title": "{{APP_TITLE}}",
-    "description": "{{APP_DESCRIPTION}}",
-    "resources": "resources.json",
-    "sourceTemplate": {
-      "id": "@sap/generator-fiori:worklist",
-      "version": "1.9.0",
-      "toolsId": "4e35629e-81db-4564-b14f-e8758ab5839e"
-    },
-    "dataSources": {
-      "mainService": {
-        "uri": "/sap/opu/odata/sap/ZHCM_UX_PER_SRV/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "localUri": "localService/metadata.xml",
-          "odataVersion": "2.0"
+    "_version": "1.17.0",
+    "sap.app": {
+        "id": "com.thy.ux.per",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{APP_TITLE}}",
+        "description": "{{APP_DESCRIPTION}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:worklist",
+            "version": "1.9.0",
+            "toolsId": "4e35629e-81db-4564-b14f-e8758ab5839e"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZHCM_UX_PER_SRV/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            }
         }
-      }
+    },
+    "sap.ui": {
+        "fullWidth": true,
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": false,
+        "config": {
+            "fullWidth": true
+        },
+        "dependencies": {
+            "minUI5Version": "1.71.61",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.f": {},
+                "sap.suite.ui.generic.template": {},
+                "sap.ui.comp": {},
+                "sap.ui.generic.app": {},
+                "sap.ui.table": {},
+                "sap.ushell": {},
+                "com.smod.ux.lib": {},
+                "com.smod.ux.mat": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "com.thy.ux.per.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {}
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "styles/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "com.thy.ux.per.view",
+                "controlId": "app",
+                "controlAggregation": "pages",
+                "bypassed": {
+                    "target": [
+                        "notFound"
+                    ]
+                },
+                "async": true
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "form",
+                    "target": [
+                        "form"
+                    ]
+                },
+                {
+                    "pattern": "design/{formId}",
+                    "name": "design",
+                    "target": [
+                        "design"
+                    ]
+                },
+                {
+                    "pattern": "requestlist",
+                    "name": "requestlist",
+                    "target": [
+                        "requestlist"
+                    ]
+                },
+                {
+                    "pattern": "requestdetail/{requestId}",
+                    "name": "requestdetail",
+                    "target": [
+                        "requestdetail"
+                    ]
+                }
+            ],
+            "targets": {
+                "form": {
+                    "viewName": "Form",
+                    "viewId": "form",
+                    "viewLevel": 1,
+                    "title": "{i18n>FORM_VIEW_TITLE}"
+                },
+                "design": {
+                    "viewName": "Design",
+                    "viewId": "design",
+                    "viewLevel": 2,
+                    "title": "{i18n>DESIGN_VIEW_TITLE}"
+                },
+                "requestlist": {
+                    "viewName": "RequestList",
+                    "viewId": "requestlist",
+                    "viewLevel": 1,
+                    "title": "{i18n>REQUEST_LIST_VIEW_TITLE}"
+                },
+                "requestdetail": {
+                    "viewName": "RequestDetail",
+                    "viewId": "requestdetail",
+                    "viewLevel": 2,
+                    "title": "{i18n>REQUEST_DETAIL_VIEW_TITLE}"
+                },
+                "notFound": {
+                    "viewName": "NotFound",
+                    "viewId": "notFound"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "com.thy.ux.per.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "app"
+        }
     }
-  },
-  "sap.ui": {
-    "fullWidth": true,
-    "technology": "UI5",
-    "icons": {
-      "icon": "",
-      "favIcon": "",
-      "phone": "",
-      "phone@2": "",
-      "tablet": "",
-      "tablet@2": ""
-    },
-    "deviceTypes": {
-      "desktop": true,
-      "tablet": true,
-      "phone": true
-    }
-  },
-  "sap.ui5": {
-    "flexEnabled": false,
-    "config":{
-      "fullWidth": true
-    },
-    "dependencies": {
-      "minUI5Version": "1.71.60",
-      "libs": {
-        "sap.m": {},
-        "sap.ui.core": {},
-        "sap.f": {},
-        "sap.suite.ui.generic.template": {},
-        "sap.ui.comp": {},
-        "sap.ui.generic.app": {},
-        "sap.ui.table": {},
-        "sap.ushell": {},
-        "com.smod.ux.lib": {},
-        "com.smod.ux.mat": {}
-      }
-    },
-    "contentDensities": {
-      "compact": true,
-      "cozy": true
-    },
-    "models": {
-      "i18n": {
-        "type": "sap.ui.model.resource.ResourceModel",
-        "settings": {
-          "bundleName": "com.thy.ux.per.i18n.i18n"
-        }
-      },
-      "": {
-        "dataSource": "mainService",
-        "preload": true,
-        "settings": {}
-      }
-    },
-    "resources": {
-      "css": [
-        {"uri": "styles/style.css"}
-      ]
-    },
-    "routing": {
-      "config": {
-        "routerClass": "sap.m.routing.Router",
-        "viewType": "XML",
-        "viewPath": "com.thy.ux.per.view",
-        "controlId": "app",
-        "controlAggregation": "pages",
-        "bypassed": {
-          "target": [
-            "notFound"
-          ]
-        },
-        "async": true
-      },
-      "routes": [
-        {
-          "pattern": "",
-          "name": "form",
-          "target": [
-            "form"
-          ]
-        },
-        {
-          "pattern": "design/{formId}",
-          "name": "design",
-          "target": [
-            "design"
-          ]
-        },
-        {
-          "pattern": "requestlist",
-          "name": "requestlist",
-          "target": [
-            "requestlist"
-          ]
-        },
-        {
-          "pattern": "requestdetail/{requestId}",
-          "name": "requestdetail",
-          "target": [
-            "requestdetail"
-          ]
-        }
-      ],
-      "targets": {
-        "form": {
-          "viewName": "Form",
-          "viewId": "form",
-          "viewLevel": 1,
-          "title": "{i18n>FORM_VIEW_TITLE}"
-        },
-        "design": {
-          "viewName": "Design",
-          "viewId": "design",
-          "viewLevel": 2,
-          "title": "{i18n>DESIGN_VIEW_TITLE}"
-        },
-        "requestlist": {
-          "viewName": "RequestList",
-          "viewId": "requestlist",
-          "viewLevel": 1,
-          "title": "{i18n>REQUEST_LIST_VIEW_TITLE}"
-        },
-        "requestdetail": {
-          "viewName": "RequestDetail",
-          "viewId": "requestdetail",
-          "viewLevel": 2,
-          "title": "{i18n>REQUEST_DETAIL_VIEW_TITLE}"
-        },
-        "notFound": {
-          "viewName": "NotFound",
-          "viewId": "notFound"
-        }
-      }
-    },
-    "rootView": {
-      "viewName": "com.thy.ux.per.view.App",
-      "type": "XML",
-      "async": true,
-      "id": "app"
-    }
-  }
 }

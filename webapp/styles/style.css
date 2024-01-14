@@ -124,7 +124,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
 
 .emphasizedButton {
   --md-sys-color-primary: var(--md-ref-palette-tertiary35);
-  background-color: var(--md-ref-palette-secondary95);
 }
 
 .smallButton {

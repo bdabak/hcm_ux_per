@@ -32,9 +32,16 @@ sap.ui.define(
             type: "com.thy.ux.per.controls.WizardFooter",
             multiple: false,
           },
+          footer: {
+            type: "com.thy.ux.per.controls.WizardFooter",
+            multiple: false,
+          },
         },
         events: {
-          submit: {
+          sendForApproval: {
+            parameters: {},
+          },
+          saveAsDraft: {
             parameters: {},
           },
           nextStep: {
@@ -86,6 +93,19 @@ sap.ui.define(
                   writeToDom: true,
                 })
               ),
+            new Button({
+                text: "{i18n>WIZARD_DRAFT}",
+                type: "Reject",
+                press: this._handleDraft.bind(this),
+              })
+                .addStyleClass("sapUiTinyMarginEnd")
+                .addCustomData(
+                  new CustomData({
+                    key: "wizard-type",
+                    value: "action-draft",
+                    writeToDom: true,
+                  })
+                ),
             new Button({
               text: "{i18n>WIZARD_NEXT_STEP}",
               type: "Emphasized",
@@ -182,9 +202,9 @@ sap.ui.define(
           .openEnd()
 
           //-------Form
-          .openStart("form")
+          .openStart("div")
           .class("smod-wizard-body-form")
-          .attr("onsubmit","event.preventDefault()")
+          // .attr("onsubmit","event.preventDefault()")
           .openEnd();
         //--Render step contents
         aStepContents.forEach((oStepContent, i) => {
@@ -201,7 +221,7 @@ sap.ui.define(
         //--Footer
 
         oRM
-          .close("form")
+          .close("div")
           //-------Form
 
           .close("div")
@@ -226,7 +246,7 @@ sap.ui.define(
           .close("div");
         //-Main
       },
-      initiateWizardState:function(){
+      initiateWizardState: function () {
         this.setActiveStep(1);
       },
       _geti18nText: function (sTextKey) {
@@ -241,57 +261,61 @@ sap.ui.define(
       _goToNextStep: function () {
         this.setActiveStep(this.getActiveStep() + 1);
       },
-      _getCurrentStep: function(){
+      _getCurrentStep: function () {
         const iActiveStep = parseInt(this.getActiveStep(), 10);
         const aSteps = this.getSteps() || [];
 
         //--Get current step
         return aSteps.find((oStep, i) => {
-           return iActiveStep === parseInt(oStep.getNumber(), 10); 
+          return iActiveStep === parseInt(oStep.getNumber(), 10);
         });
       },
-      _getNextStep: function(){
+      _getNextStep: function () {
         const iActiveStep = parseInt(this.getActiveStep(), 10) + 1;
         const aSteps = this.getSteps() || [];
 
         //--Get current step
         return aSteps.find((oStep, i) => {
-           return iActiveStep === parseInt(oStep.getNumber(), 10); 
+          return iActiveStep === parseInt(oStep.getNumber(), 10);
         });
       },
 
-      _getPrevStep: function(){
+      _getPrevStep: function () {
         const iActiveStep = parseInt(this.getActiveStep(), 10) - 1;
         const aSteps = this.getSteps() || [];
 
         //--Get current step
         return aSteps.find((oStep, i) => {
-           return iActiveStep === parseInt(oStep.getNumber(), 10); 
+          return iActiveStep === parseInt(oStep.getNumber(), 10);
         });
       },
       _handlePrev: function (oEvent) {
-        if(!this.mEventRegistry?.prevStep){
-            this._goToPrevStep();
-            return;
+        if (!this.mEventRegistry?.prevStep) {
+          this._goToPrevStep();
+          return;
         }
         this.firePrevStep({
-            callbackFn: this._goToPrevStep.bind(this),
-            currentStep: this._getCurrentStep(),
-            targetStep: this._getPrevStep()
-        })
+          callbackFn: this._goToPrevStep.bind(this),
+          currentStep: this._getCurrentStep(),
+          targetStep: this._getPrevStep(),
+        });
       },
       _handleNext: function (oEvent) {
-        if(!this.mEventRegistry?.nextStep){
-            this._goToNextStep();
-            return;
+        if (!this.mEventRegistry?.nextStep) {
+          this._goToNextStep();
+          return;
         }
         this.fireNextStep({
-            callbackFn: this._goToNextStep.bind(this),
-            currentStep: this._getCurrentStep(),
-            targetStep: this._getNextStep()
-        })
+          callbackFn: this._goToNextStep.bind(this),
+          currentStep: this._getCurrentStep(),
+          targetStep: this._getNextStep(),
+        });
       },
       _handleSubmit: function (oEvent) {
+        this.fireSendForApproval();
+      },
+      _handleDraft: function (oEvent) {
+        this.fireSaveAsDraft();
       },
     });
   }

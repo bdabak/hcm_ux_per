@@ -3,7 +3,6 @@
 	xmlns:core="sap.ui.core"
     xmlns:thy="com.thy.ux.per.controls"
 >
-
     <VBox id="idRequestDetailsBox">
 
     </VBox>

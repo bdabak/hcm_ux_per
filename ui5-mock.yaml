@@ -37,3 +37,7 @@ server:
             mockdataPath: ./webapp/localService/mockdata
             generateMockData: true
         annotations: []
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: com.thy.ux.per

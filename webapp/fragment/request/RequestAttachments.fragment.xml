@@ -1,0 +1,40 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:upload="sap.m.upload"
+>
+    <upload:UploadSet
+        id="UploadSet"
+        instantUpload="false"
+        showIcons="false"
+        uploadEnabled="true"
+        terminationEnabled="false"
+        fileTypes="pdf,doc,docx,xls,xlsx,ppt,pptx"
+        maxFileNameLength="50"
+        maxFileSize="10"
+        mediaTypes="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        uploadUrl=""
+        items="{
+            path: 'detailView>/RequestAttachmentSet',
+            templateShareable: false
+        }"
+    >
+        <upload:items>
+            <upload:UploadSetItem
+                fileName="{fileName}"
+                mediaType="{mediaType}"
+                url="{url}"
+                thumbnailUrl="{thumbnailUrl}"
+            >
+                <upload:attributes>
+                    <ObjectAttribute
+                        title="{title}"
+                        text="{text}"
+                        active="{active}"
+                    />
+                </upload:attributes>
+                
+            </upload:UploadSetItem>
+        </upload:items>
+    </upload:UploadSet>
+</core:FragmentDefinition>

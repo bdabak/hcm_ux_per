@@ -14,6 +14,18 @@ sap.ui.define([], function () {
                 return "";
             }
             return parseFloat(sValue).toFixed(2);
+        },
+        getWfStatusState: function(sStatus){
+            switch(sStatus){
+                case "DRAFT":
+                    return "Warning";
+                case "SENT":
+                    return "Information";
+                case "APPROVED":
+                    return "Success";
+                case "REJECTED":
+                    return "Error";
+            }
         }
 
     };

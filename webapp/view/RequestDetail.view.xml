@@ -14,10 +14,12 @@
         title="{detailView>/PageTitle}"
         showNavButton="true"
         navButtonPress=".onNavBack"
-    >
+    >   
+        
         <thy:Wizard activeStep="1" id="idRequestWizard"
             nextStep=".onWizardNextStep"
-          
+            saveAsDraft=".onSaveAsDraft"
+            sendForApproval=".onSendForApproval"
         >
             <thy:steps>
                 <thy:WizardStep
@@ -32,6 +34,11 @@
                 />
                 <thy:WizardStep
                     number="3"
+                    title="Ek Dosyalar"
+                    description="Taleple ilgili ek dosyalar"
+                />
+                  <thy:WizardStep
+                    number="4"
                     title="Talep Özeti"
                     description="Talep özeti ve gönderim"
                 />
@@ -49,7 +56,13 @@
                 </thy:WizardStepContent>
                 <thy:WizardStepContent number="3">
                     <thy:content>
-                        <Text text="Step 3" />
+                         <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.request.RequestAttachments" />
+                    
+                    </thy:content>
+                </thy:WizardStepContent>
+                <thy:WizardStepContent number="4">
+                    <thy:content>
+                        <Text text="Step 4" />
                     </thy:content>
                 </thy:WizardStepContent>
             </thy:stepContents>

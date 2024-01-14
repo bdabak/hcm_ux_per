@@ -6,28 +6,30 @@
     xmlns:md="com.smod.ux.mat.controls"
     height="100%"
     busyIndicatorDelay="0"
+    xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <Page showHeader="false">
         <Table
-            items="{/RequestSet}"
+            items="{/RequestHeaderSet}"
             noDataText="{i18n>REQUEST_LIST_EMPTY}"
         >
             <headerToolbar>
                 <OverflowToolbar>
                     <content>
                         <Title
-                            text="Form Listesi"
+                            text="{i18n>REQUEST_LIST}"
                             level="H2"
                         />
                         <ToolbarSpacer />
                         <md:Button
                             press=".onNewRequest"
-                            variant="Elevated"
+                            variant="Filled"
                             text="{i18n>NEW_ACTION}"
                         >
                             <md:leadingIcon>
                                 <md:Icon
-                                    icon="add"
+                                    
+                                    icon="person_add"
                                     tooltip="Yeni talep"
                                 />
                             </md:leadingIcon>
@@ -49,12 +51,19 @@
                 <Column>
                     <Text text="Talep Başlığı" />
                 </Column>
+                 <Column
+                    minScreenWidth="Tablet"
+                    demandPopin="true"
+                >
+                    <Text text="Durum" />
+                </Column>
                 <Column
                     minScreenWidth="Tablet"
                     demandPopin="true"
                 >
-                    <Text text="Oluşturan" />
+                    <Text text="Son Değişiklik" />
                 </Column>
+               
                 <Column
                     hAlign="Center"
                     width="10rem"
@@ -65,11 +74,13 @@
             <items>
                 <ColumnListItem vAlign="Middle">
                     <cells>
-                        <ObjectIdentifier
-                            title="{RequestTitle}"
-                            text="{RequestId}"
+                        <Title
+                            text="{RequestTitle}"
+                            tooltip="{RequestId}"
                         />
-                        <ObjectIdentifier
+                       
+                        <ObjectStatus text="{path:'WorkflowStatus'}" state="{path:'WorkflowStatus', formatter:'.formatter.getWfStatusState'}"/>
+                         <ObjectIdentifier
                             title="{CreatedBy}"
                             text="{
                                 path: 'CreationDate',
@@ -93,6 +104,7 @@
                                 press=".onEditRequest"
                                 class="sapUiTinyMarginEnd"
                                 variant="Filled"
+                                cd:request-id="{RequestId}"
                             >
                                 <md:icons>
                                     <md:Icon icon="edit" />
@@ -102,6 +114,7 @@
                                 press=".onDeleteRequest"
                                 class="rejectButton"
                                 variant="Filled"
+                                cd:request-id="{RequestId}"
                             >
                                 <md:icons>
                                     <md:Icon icon="delete" />

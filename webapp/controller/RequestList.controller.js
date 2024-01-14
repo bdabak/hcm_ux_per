@@ -21,6 +21,17 @@ sap.ui.define(
           requestId: "NEW",
         });
       },
+      onEditRequest: function(oEvent){
+        const sRequestId = oEvent.getSource().data("request-id");
+
+        if(sRequestId){
+          this.getRouter().navTo("requestdetail", {
+            requestId: sRequestId,
+          });
+        }
+      },
+      onDeleteRequest: function(oEvent){
+      }
     });
   }
 );

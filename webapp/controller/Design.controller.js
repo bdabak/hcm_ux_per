@@ -487,7 +487,7 @@ sap.ui.define(
                   for (const [key, value] of Object.entries(oObj)) {
                     aValue.push(
                       new sap.ui.core.Item({
-                        key: key,
+                        key: value,
                         text: value,
                       })
                     );
@@ -557,7 +557,7 @@ sap.ui.define(
                   oObj &&
                   typeof oObj === "object"
                 ) {
-                  sVal = oObj[o.Value];
+                  sVal = oObj.hasOwnProperty(o.Value) ? oObj[o.Value] : o.Value;
                 } else {
                   sVal = o.Value;
                 }

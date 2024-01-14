@@ -29,7 +29,7 @@
                             class="emphasizedButton"
                             variant="Filled"
                         >
-                                <md:Icon icon="add" />
+                                <md:Icon icon="grid_view" tooltip="Yeni"/>
                         </md:IconButton>
                     </content>
                 </OverflowToolbar>
@@ -42,7 +42,7 @@
                     minScreenWidth="Tablet"
                     demandPopin="true"
                 >
-                    <Text text="Oluşturan" />
+                    <Text text="Son Değiştiren" />
                 </Column>
                 <Column
                     hAlign="Center"

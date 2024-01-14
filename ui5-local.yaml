@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
-
 specVersion: "2.5"
 metadata:
   name: com.thy.ux.per
@@ -28,11 +26,11 @@ server:
     - name: fiori-tools-proxy
       afterMiddleware: compression
       configuration:
-        ignoreCertError: false # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
+        ignoreCertError: false
         backend:
           - path: /sap
             url: http://tks0154.thy.com:8000
-            client: '300'
+            client: "300"
     - name: sap-fe-mockserver
       beforeMiddleware: csp
       configuration:

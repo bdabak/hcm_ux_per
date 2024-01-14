@@ -5,12 +5,12 @@
     xmlns:thy="com.thy.ux.per.controls"
 >
     <thy:FormContainer
-        rowGap="0.5rem"
+        rowGap="1rem"
         id="idRequestHeaderForm"
     >
         <md:Select
             variant="Outlined"
-            label="{/#Request/RequestType/@sap:label}"
+            label="{/#RequestHeader/RequestType/@sap:label}"
             options="{/RequestTypeSet}"
             required="true"
             enabled="false"
@@ -21,17 +21,10 @@
                 value="{RequestTypeDescription}"
             />
         </md:Select>
-        <md:TextField
-            variant="Outlined"
-            label="{/#Request/RequestTitle/@sap:label}"
-            width="100%"
-            required="true"
-            value="{detailView>/RequestHeader/RequestTitle}"
-            maxLength="60"
-        />
+        
         <md:Select
             variant="Outlined"
-            label="{/#Request/OrgUnitCode/@sap:label}"
+            label="{/#RequestHeader/OrgUnitCode/@sap:label}"
             options="{/OrgUnitSet}"
             required="true"
             enabled="true"
@@ -44,7 +37,7 @@
         </md:Select>
         <md:Select
             variant="Outlined"
-            label="{/#Request/PartnershipCode/@sap:label}"
+            label="{/#RequestHeader/PartnershipCode/@sap:label}"
             options="{/PartnershipSet}"
             required="true"
             selectedKey="{detailView>/RequestHeader/PartnershipCode}"
@@ -57,8 +50,16 @@
         </md:Select>
         <md:TextField
             variant="Outlined"
+            label="{/#RequestHeader/RequestTitle/@sap:label}"
+            width="100%"
             required="true"
-            label="{/#Request/RequestDescription/@sap:label}"
+            value="{detailView>/RequestHeader/RequestTitle}"
+            maxLength="60"
+        />
+        <md:TextField
+            variant="Outlined"
+            required="true"
+            label="{/#RequestHeader/RequestDescription/@sap:label}"
             width="100%"
             maxLength="400"
             type="TextArea"

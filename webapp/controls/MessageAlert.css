@@ -1,0 +1,116 @@
+:root {
+  --bs-success: #27b468;
+  --bs-info: #0a6ed1;
+  --bs-warning: #cca312;
+  --bs-error: #f1416c;
+  --bs-success-light: #b8ffda;
+  --bs-info-light: #cfe5fa;
+  --bs-warning-light: #fff8dd;
+  --bs-error-light: #fff5f8;
+  --bs-alert-border-radius: 0.475rem;
+  --bs-alert-margin: 1rem;
+  --bs-icon-font: "Material Symbols Rounded";
+  --bs-button-color: #a8a7ab;
+  --bs-button-hover-color: #131313;
+}
+.smod-message-alert {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: var(--bs-alert-margin);
+  margin-top: var(--bs-alert-margin);
+  border: 1px solid var(--bs-alert-color);
+  border-radius: var(--bs-alert-border-radius);
+}
+.smod-message-alert-information {
+  color: var(--bs-info) !important;
+  border-color: var(--bs-info) !important;
+  background-color: var(--bs-info-light) !important;
+  --bs-alert-color: var(--bs-info);
+}
+.smod-message-alert-success {
+  color: var(--bs-success) !important;
+  border-color: var(--bs-success) !important;
+  background-color: #ccf7e1 !important;
+  --bs-alert-color: var(--bs-success);
+}
+.smod-message-alert-warning {
+  color: var(--bs-warning) !important;
+  border-color: var(--bs-warning) !important;
+  background-color: var(--bs-warning-light) !important;
+  --bs-alert-color: var(--bs-warning);
+}
+.smod-message-alert-error {
+  color: var(--bs-error) !important;
+  border-color: var(--bs-error) !important;
+  background-color: var(--bs-error-light) !important;
+  --bs-alert-color: var(--bs-error);
+}
+
+.smod-message-alert-icon {
+  font-family: var(--bs-icon-font);
+  font-weight: normal;
+  font-style: normal;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  color: var(--bs-alert-color);
+  margin-right: 1rem;
+}
+
+.smod-message-alert-body {
+  color: var(--bs-alert-color);
+  display: flex;
+  flex-direction: column;
+  font-family: Poppins, sans-serif;
+  width: 100%;
+}
+
+.smod-message-alert-title {
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.smod-message-alert-text {
+  font-weight: 400;
+}
+
+.smod-message-alert-dismiss-button {
+  cursor: pointer;
+
+  background-color: transparent;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  height: calc(1.5em + 1.55rem + 2px);
+  width: calc(1.5em + 1.55rem + 2px);
+  line-height: 1;
+  box-shadow: none;
+  border: 0;
+  right: 0 !important;
+  top: 0 !important;
+}
+
+.smod-message-alert-dismiss-button .smod-message-alert-icon {
+  color: var(--bs-button-color);
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  font-size: 24px;
+}
+
+.smod-message-alert-dismiss-button:hover .smod-message-alert-icon {
+  color: var(--bs-button-hove-color);
+}

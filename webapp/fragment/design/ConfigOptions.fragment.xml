@@ -35,10 +35,10 @@
                     <md:IconButton
                         press=".onSaveConfiguration"
                         class="smallButton"
-                        variant="Filled"
+                        variant="Filled" tooltip="Güncelle"
                     >
                         <md:icons>
-                            <md:Icon icon="save" />
+                             <md:Icon icon="rule_settings" />
                         </md:icons>
                     </md:IconButton>
                     <md:IconButton
@@ -96,9 +96,10 @@
                         press=".onSaveConfiguration"
                         class="smallButton"
                         variant="Filled"
+                         tooltip="Güncelle"
                     >
                         <md:icons>
-                            <md:Icon icon="save" />
+                            <md:Icon icon="rule_settings"  />
                         </md:icons>
                     </md:IconButton>
                     <md:IconButton

@@ -128,7 +128,7 @@ sap.ui.define([
 				text: null,
 				html: null,
 				icon: "info",
-				position: "bottom",
+				position: "top-end",
 				showConfirmButton: false,
 				confirmButtonText: this.getText("CONFIRM_ACTION", []),
 				confirmButtonColor: "#3085d6",

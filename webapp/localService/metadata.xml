@@ -3,7 +3,7 @@
     <edmx:DataServices m:DataServiceVersion="2.0">
         <Schema Namespace="ZHCM_UX_PER_SRV" xml:lang="tr" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
             <Annotation Term="Core.SchemaVersion" String="1.0.0" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
-            <EntityType Name="Request" sap:content-version="1">
+            <EntityType Name="RequestHeader" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="RequestId"/>
                     <PropertyRef Name="Version"/>
@@ -32,6 +32,7 @@
                 <Property Name="CreationDate" Type="Edm.DateTime" Precision="7" sap:unicode="false" sap:label="Tarih"/>
                 <Property Name="CreationTime" Type="Edm.Time" Precision="0" sap:unicode="false" sap:label="Saat"/>
                 <NavigationProperty Name="FormHeader" Relationship="ZHCM_UX_PER_SRV.RequestToFormHeader" FromRole="FromRole_RequestToFormHeader" ToRole="ToRole_RequestToFormHeader"/>
+                <NavigationProperty Name="RequestDetailSet" Relationship="ZHCM_UX_PER_SRV.RequestToRequestDetail" FromRole="FromRole_RequestToRequestDetail" ToRole="ToRole_RequestToRequestDetail"/>
             </EntityType>
             <EntityType Name="FormHeader" sap:content-version="1">
                 <Key>
@@ -70,7 +71,7 @@
                 <Property Name="FormId" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Form numarası"/>
                 <Property Name="ElementUid" Type="Edm.String" Nullable="false" MaxLength="32" sap:unicode="false" sap:label="Bileşen uid"/>
                 <Property Name="PropertyName" Type="Edm.String" MaxLength="40" sap:unicode="false" sap:label="Bileşen özelliği"/>
-                <Property Name="PropertyValue" Type="Edm.String" MaxLength="100" sap:unicode="false" sap:label="Bileşen değeri"/>
+                <Property Name="PropertyValue" Type="Edm.String" MaxLength="255" sap:unicode="false" sap:label="Bileşen değeri"/>
                 <Property Name="PropertyType" Type="Edm.String" MaxLength="60" sap:unicode="false" sap:label="Özellik tipi"/>
                 <Property Name="IsStyleClass" Type="Edm.Boolean" sap:unicode="false" sap:label="Sınıf"/>
             </EntityType>
@@ -94,7 +95,7 @@
                     <PropertyRef Name="Operation"/>
                 </Key>
                 <Property Name="Operation" Type="Edm.String" Nullable="false" sap:unicode="false" sap:label="İşlem" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-                <NavigationProperty Name="Request" Relationship="ZHCM_UX_PER_SRV.RequestOperationToRequest" FromRole="FromRole_RequestOperationToRequest" ToRole="ToRole_RequestOperationToRequest"/>
+                <NavigationProperty Name="RequestHeader" Relationship="ZHCM_UX_PER_SRV.RequestOperationToRequestHeader" FromRole="FromRole_RequestOperationToRequestHeader" ToRole="ToRole_RequestOperationToRequestHeader"/>
                 <NavigationProperty Name="ReturnSet" Relationship="ZHCM_UX_PER_SRV.RequestOperationToReturn" FromRole="FromRole_RequestOperationToReturn" ToRole="ToRole_RequestOperationToReturn"/>
             </EntityType>
             <EntityType Name="Return" sap:content-version="1">
@@ -128,8 +129,8 @@
                 <Property Name="ProcessName" Type="Edm.String" MaxLength="50" sap:unicode="false" sap:label="Süreç tanımı"/>
                 <Property Name="FormId" Type="Edm.String" MaxLength="10" sap:unicode="false" sap:label="Form numarası"/>
                 <Property Name="FormTitle" Type="Edm.String" MaxLength="40" sap:unicode="false" sap:label="Form başlığı"/>
-                <NavigationProperty Name="FormHeader" Relationship="ZHCM_UX_PER_SRV.ProcessHeaderToFormHeader" FromRole="FromRole_ProcessHeaderToFormHeader" ToRole="ToRole_ProcessHeaderToFormHeader"/>
                 <NavigationProperty Name="ProcessFieldSet" Relationship="ZHCM_UX_PER_SRV.ProcessHeaderToProcessField" FromRole="FromRole_ProcessHeaderToProcessField" ToRole="ToRole_ProcessHeaderToProcessField"/>
+                <NavigationProperty Name="FormHeader" Relationship="ZHCM_UX_PER_SRV.ProcessHeaderToFormHeader" FromRole="FromRole_ProcessHeaderToFormHeader" ToRole="ToRole_ProcessHeaderToFormHeader"/>
             </EntityType>
             <EntityType Name="ProcessField" sap:content-version="1">
                 <Key>
@@ -148,6 +149,7 @@
                 <Property Name="FieldDescription" Type="Edm.String" MaxLength="80" sap:unicode="false" sap:label="Alan açıklaması"/>
                 <Property Name="FormId" Type="Edm.String" MaxLength="10" sap:unicode="false" sap:label="Form numarası"/>
                 <Property Name="ProcessFieldType" Type="Edm.String" MaxLength="5" sap:unicode="false" sap:label="Alan türü"/>
+                <NavigationProperty Name="ProcessFieldBindingSet" Relationship="ZHCM_UX_PER_SRV.ProcessFieldToProcessFieldBinding" FromRole="FromRole_ProcessFieldToProcessFieldBinding" ToRole="ToRole_ProcessFieldToProcessFieldBinding"/>
                 <NavigationProperty Name="ProcessFieldValueSet" Relationship="ZHCM_UX_PER_SRV.ProcessFieldToProcessFieldValue" FromRole="FromRole_ProcessFieldToProcessFieldValue" ToRole="ToRole_ProcessFieldToProcessFieldValue"/>
             </EntityType>
             <EntityType Name="ProcessFieldValue" sap:content-version="1">
@@ -160,20 +162,60 @@
                 <Property Name="ProcessFieldId" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="Alan adı"/>
                 <Property Name="Key" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Değer"/>
                 <Property Name="Value" Type="Edm.String" MaxLength="255" sap:unicode="false" sap:label="Değer"/>
-                <Property Name="ConditionOfField" Type="Edm.String" MaxLength="5" sap:unicode="false" sap:label="Alan adı"/>
-                <Property Name="Condition" Type="Edm.String" MaxLength="5" sap:unicode="false" sap:label="Koşul"/>
+            </EntityType>
+            <EntityType Name="ProcessFieldBinding" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="ProcessId"/>
+                    <PropertyRef Name="ProcessFieldId"/>
+                    <PropertyRef Name="PropertyName"/>
+                </Key>
+                <Property Name="ProcessId" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="Süreç"/>
+                <Property Name="ProcessFieldId" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="Alan adı"/>
+                <Property Name="PropertyName" Type="Edm.String" Nullable="false" MaxLength="20" sap:unicode="false" sap:label="Özellik"/>
+                <Property Name="PropertyBinding" Type="Edm.String" MaxLength="255" sap:unicode="false" sap:label="Kod alanı"/>
+                <Property Name="PropertyValue" Type="Edm.String" MaxLength="255" sap:unicode="false" sap:label="Değer"/>
+            </EntityType>
+            <EntityType Name="RequestDetail" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="RequestId"/>
+                    <PropertyRef Name="Version"/>
+                    <PropertyRef Name="ProcessFieldId"/>
+                </Key>
+                <Property Name="RequestId" Type="Edm.String" Nullable="false" MaxLength="32" sap:unicode="false" sap:label="Talep no" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Version" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Versiyon no" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ProcessFieldId" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="Alan adı" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ProcessFieldValueKey" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Değer anahtarı" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ProcessFieldValue" Type="Edm.String" Nullable="false" MaxLength="255" sap:unicode="false" sap:label="Değer" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
             <Association Name="FormComponentToProperty" sap:content-version="1">
                 <End Type="ZHCM_UX_PER_SRV.FormComponent" Multiplicity="1" Role="FromRole_FormComponentToProperty"/>
                 <End Type="ZHCM_UX_PER_SRV.FormComponentProperty" Multiplicity="*" Role="ToRole_FormComponentToProperty"/>
                 <ReferentialConstraint>
                     <Principal Role="FromRole_FormComponentToProperty">
-                        <PropertyRef Name="FormId"/>
                         <PropertyRef Name="ElementUid"/>
+                        <PropertyRef Name="FormId"/>
                     </Principal>
                     <Dependent Role="ToRole_FormComponentToProperty">
-                        <PropertyRef Name="FormId"/>
                         <PropertyRef Name="ElementUid"/>
+                        <PropertyRef Name="FormId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="RequestToFormHeader" sap:content-version="1">
+                <End Type="ZHCM_UX_PER_SRV.RequestHeader" Multiplicity="1" Role="FromRole_RequestToFormHeader"/>
+                <End Type="ZHCM_UX_PER_SRV.FormHeader" Multiplicity="1" Role="ToRole_RequestToFormHeader"/>
+            </Association>
+            <Association Name="RequestToRequestDetail" sap:content-version="1">
+                <End Type="ZHCM_UX_PER_SRV.RequestHeader" Multiplicity="1" Role="FromRole_RequestToRequestDetail"/>
+                <End Type="ZHCM_UX_PER_SRV.RequestDetail" Multiplicity="*" Role="ToRole_RequestToRequestDetail"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_RequestToRequestDetail">
+                        <PropertyRef Name="RequestId"/>
+                        <PropertyRef Name="Version"/>
+                    </Principal>
+                    <Dependent Role="ToRole_RequestToRequestDetail">
+                        <PropertyRef Name="RequestId"/>
+                        <PropertyRef Name="Version"/>
                     </Dependent>
                 </ReferentialConstraint>
             </Association>
@@ -182,12 +224,26 @@
                 <End Type="ZHCM_UX_PER_SRV.ProcessFieldValue" Multiplicity="*" Role="ToRole_ProcessFieldToProcessFieldValue"/>
                 <ReferentialConstraint>
                     <Principal Role="FromRole_ProcessFieldToProcessFieldValue">
-                        <PropertyRef Name="ProcessFieldId"/>
                         <PropertyRef Name="ProcessId"/>
+                        <PropertyRef Name="ProcessFieldId"/>
                     </Principal>
                     <Dependent Role="ToRole_ProcessFieldToProcessFieldValue">
-                        <PropertyRef Name="ProcessFieldId"/>
                         <PropertyRef Name="ProcessId"/>
+                        <PropertyRef Name="ProcessFieldId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="ProcessFieldToProcessFieldBinding" sap:content-version="1">
+                <End Type="ZHCM_UX_PER_SRV.ProcessField" Multiplicity="1" Role="FromRole_ProcessFieldToProcessFieldBinding"/>
+                <End Type="ZHCM_UX_PER_SRV.ProcessFieldBinding" Multiplicity="*" Role="ToRole_ProcessFieldToProcessFieldBinding"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_ProcessFieldToProcessFieldBinding">
+                        <PropertyRef Name="ProcessId"/>
+                        <PropertyRef Name="ProcessFieldId"/>
+                    </Principal>
+                    <Dependent Role="ToRole_ProcessFieldToProcessFieldBinding">
+                        <PropertyRef Name="ProcessId"/>
+                        <PropertyRef Name="ProcessFieldId"/>
                     </Dependent>
                 </ReferentialConstraint>
             </Association>
@@ -227,20 +283,16 @@
                     </Dependent>
                 </ReferentialConstraint>
             </Association>
-            <Association Name="RequestToFormHeader" sap:content-version="1">
-                <End Type="ZHCM_UX_PER_SRV.Request" Multiplicity="1" Role="FromRole_RequestToFormHeader"/>
-                <End Type="ZHCM_UX_PER_SRV.FormHeader" Multiplicity="1" Role="ToRole_RequestToFormHeader"/>
-            </Association>
-            <Association Name="RequestOperationToRequest" sap:content-version="1">
-                <End Type="ZHCM_UX_PER_SRV.RequestOperation" Multiplicity="1" Role="FromRole_RequestOperationToRequest"/>
-                <End Type="ZHCM_UX_PER_SRV.Request" Multiplicity="1" Role="ToRole_RequestOperationToRequest"/>
+            <Association Name="RequestOperationToRequestHeader" sap:content-version="1">
+                <End Type="ZHCM_UX_PER_SRV.RequestOperation" Multiplicity="1" Role="FromRole_RequestOperationToRequestHeader"/>
+                <End Type="ZHCM_UX_PER_SRV.RequestHeader" Multiplicity="1" Role="ToRole_RequestOperationToRequestHeader"/>
             </Association>
             <Association Name="RequestOperationToReturn" sap:content-version="1">
                 <End Type="ZHCM_UX_PER_SRV.RequestOperation" Multiplicity="1" Role="FromRole_RequestOperationToReturn"/>
                 <End Type="ZHCM_UX_PER_SRV.Return" Multiplicity="*" Role="ToRole_RequestOperationToReturn"/>
             </Association>
             <EntityContainer Name="ZHCM_UX_PER_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
-                <EntitySet Name="RequestSet" EntityType="ZHCM_UX_PER_SRV.Request" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="RequestHeaderSet" EntityType="ZHCM_UX_PER_SRV.RequestHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="FormHeaderSet" EntityType="ZHCM_UX_PER_SRV.FormHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="FormComponentSet" EntityType="ZHCM_UX_PER_SRV.FormComponent" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="FormComponentPropertySet" EntityType="ZHCM_UX_PER_SRV.FormComponentProperty" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
@@ -252,9 +304,15 @@
                 <EntitySet Name="ProcessHeaderSet" EntityType="ZHCM_UX_PER_SRV.ProcessHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="ProcessFieldSet" EntityType="ZHCM_UX_PER_SRV.ProcessField" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="ProcessFieldValueSet" EntityType="ZHCM_UX_PER_SRV.ProcessFieldValue" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="ProcessFieldBindingSet" EntityType="ZHCM_UX_PER_SRV.ProcessFieldBinding" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="RequestDetailSet" EntityType="ZHCM_UX_PER_SRV.RequestDetail" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <AssociationSet Name="FormHeaderToComponentSet" Association="ZHCM_UX_PER_SRV.FormHeaderToComponent" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="FormHeaderSet" Role="FromRole_FormHeaderToComponent"/>
                     <End EntitySet="FormComponentSet" Role="ToRole_FormHeaderToComponent"/>
+                </AssociationSet>
+                <AssociationSet Name="RequestOperationToRequestHeaderSet" Association="ZHCM_UX_PER_SRV.RequestOperationToRequestHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="RequestOperationSet" Role="FromRole_RequestOperationToRequestHeader"/>
+                    <End EntitySet="RequestHeaderSet" Role="ToRole_RequestOperationToRequestHeader"/>
                 </AssociationSet>
                 <AssociationSet Name="RequestOperationToReturnSet" Association="ZHCM_UX_PER_SRV.RequestOperationToReturn" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="RequestOperationSet" Role="FromRole_RequestOperationToReturn"/>
@@ -269,20 +327,24 @@
                     <End EntitySet="FormComponentPropertySet" Role="ToRole_FormComponentToProperty"/>
                 </AssociationSet>
                 <AssociationSet Name="RequestToFormHeaderSet" Association="ZHCM_UX_PER_SRV.RequestToFormHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-                    <End EntitySet="RequestSet" Role="FromRole_RequestToFormHeader"/>
+                    <End EntitySet="RequestHeaderSet" Role="FromRole_RequestToFormHeader"/>
                     <End EntitySet="FormHeaderSet" Role="ToRole_RequestToFormHeader"/>
-                </AssociationSet>
-                <AssociationSet Name="RequestOperationToRequestSet" Association="ZHCM_UX_PER_SRV.RequestOperationToRequest" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-                    <End EntitySet="RequestOperationSet" Role="FromRole_RequestOperationToRequest"/>
-                    <End EntitySet="RequestSet" Role="ToRole_RequestOperationToRequest"/>
                 </AssociationSet>
                 <AssociationSet Name="ProcessHeaderToFormHeaderSet" Association="ZHCM_UX_PER_SRV.ProcessHeaderToFormHeader" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="ProcessHeaderSet" Role="FromRole_ProcessHeaderToFormHeader"/>
                     <End EntitySet="FormHeaderSet" Role="ToRole_ProcessHeaderToFormHeader"/>
                 </AssociationSet>
+                <AssociationSet Name="RequestToRequestDetailSet" Association="ZHCM_UX_PER_SRV.RequestToRequestDetail" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="RequestHeaderSet" Role="FromRole_RequestToRequestDetail"/>
+                    <End EntitySet="RequestDetailSet" Role="ToRole_RequestToRequestDetail"/>
+                </AssociationSet>
                 <AssociationSet Name="ProcessFieldToProcessFieldValueSet" Association="ZHCM_UX_PER_SRV.ProcessFieldToProcessFieldValue" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="ProcessFieldSet" Role="FromRole_ProcessFieldToProcessFieldValue"/>
                     <End EntitySet="ProcessFieldValueSet" Role="ToRole_ProcessFieldToProcessFieldValue"/>
+                </AssociationSet>
+                <AssociationSet Name="ProcessFieldToProcessFieldBindingSet" Association="ZHCM_UX_PER_SRV.ProcessFieldToProcessFieldBinding" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="ProcessFieldSet" Role="FromRole_ProcessFieldToProcessFieldBinding"/>
+                    <End EntitySet="ProcessFieldBindingSet" Role="ToRole_ProcessFieldToProcessFieldBinding"/>
                 </AssociationSet>
             </EntityContainer>
             <atom:link rel="self" href="http://tks0154.thy.com:8000/sap/opu/odata/sap/ZHCM_UX_PER_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>

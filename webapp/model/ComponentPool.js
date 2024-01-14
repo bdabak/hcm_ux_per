@@ -1,8 +1,11 @@
 sap.ui.define([
   "com/thy/ux/per/controls/FormWizard",
-  "com/thy/ux/per/controls/FormContainer"], function (
+  "com/thy/ux/per/controls/FormContainer",
+  "com/thy/ux/per/controls/MessageAlert"
+], function (
 	FormWizard,
-	FormContainer
+	FormContainer,
+  MessageAlert
   ) {
   "use strict";
   return (
@@ -34,11 +37,13 @@ sap.ui.define([
               { Name: "items", Type: "MdCheckBox",    AddMethod: "addItem" },
               { Name: "items", Type: "MdRadioGroup",  AddMethod: "addItem" },
               { Name: "items", Type: "MdMultiSelect", AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelectList",  AddMethod: "addItem" },
               { Name: "items", Type: "MdChipSet",     AddMethod: "addItem" },
               { Name: "items", Type: "MdDivider",     AddMethod: "addItem" },
               { Name: "items", Type: "MdSwitch",      AddMethod: "addItem" },
               { Name: "items", Type: "HBox",          AddMethod: "addItem" },
               { Name: "items", Type: "VBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "MessageAlert",  AddMethod: "addItem" },
             ],
           },
           {
@@ -329,11 +334,20 @@ sap.ui.define([
             Type: "HBox",
             Description: "Horizontal Box",
             Aggregations: [
-              { Name: "items", Type: "Panel", AddMethod: "addItem" },
-              { Name: "items", Type: "Form", AddMethod: "addItem" },
-              { Name: "items", Type: "HBox", AddMethod: "addItem" },
-              { Name: "items", Type: "VBox", AddMethod: "addItem" },
-              { Name: "items", Type: "FlexBox", AddMethod: "addItem" },
+              { Name: "items", Type: "MdTextField",   AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelect",      AddMethod: "addItem" },
+              { Name: "items", Type: "MdCheckBox",    AddMethod: "addItem" },
+              { Name: "items", Type: "MdRadioGroup",  AddMethod: "addItem" },
+              { Name: "items", Type: "MdMultiSelect", AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelectList",  AddMethod: "addItem" },
+              { Name: "items", Type: "MdChipSet",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdDivider",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdSwitch",      AddMethod: "addItem" },
+              { Name: "items", Type: "PerFormContainer", AddMethod: "addItem" },
+              { Name: "items", Type: "Panel",         AddMethod: "addItem" },
+              { Name: "items", Type: "HBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "VBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "MessageAlert",  AddMethod: "addItem" },
             ],
           },
           {
@@ -342,11 +356,20 @@ sap.ui.define([
             Type: "VBox",
             Description: "Vertical Box",
             Aggregations: [
-              { Name: "items", Type: "Panel", AddMethod: "addItem" },
-              { Name: "items", Type: "Form", AddMethod: "addItem" },
-              { Name: "items", Type: "HBox", AddMethod: "addItem" },
-              { Name: "items", Type: "VBox", AddMethod: "addItem" },
-              { Name: "items", Type: "FlexBox", AddMethod: "addItem" },
+              { Name: "items", Type: "MdTextField",   AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelect",      AddMethod: "addItem" },
+              { Name: "items", Type: "MdCheckBox",    AddMethod: "addItem" },
+              { Name: "items", Type: "MdRadioGroup",  AddMethod: "addItem" },
+              { Name: "items", Type: "MdMultiSelect", AddMethod: "addItem" },
+              { Name: "items", Type: "MdSelectList",  AddMethod: "addItem" },
+              { Name: "items", Type: "MdChipSet",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdDivider",     AddMethod: "addItem" },
+              { Name: "items", Type: "MdSwitch",      AddMethod: "addItem" },
+              { Name: "items", Type: "PerFormContainer", AddMethod: "addItem" },
+              { Name: "items", Type: "Panel",         AddMethod: "addItem" },
+              { Name: "items", Type: "HBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "VBox",          AddMethod: "addItem" },
+              { Name: "items", Type: "MessageAlert",  AddMethod: "addItem" },
             ],
           },
           {
@@ -394,16 +417,6 @@ sap.ui.define([
             DefaultProps: {
               label: "Default Label"
             },
-            DefaultAggregations:[
-              {
-                Name: "options",
-                Type: "MdSelectOption",
-              },
-              {
-                Name: "options",
-                Type: "MdSelectOption",
-              }
-            ],  
             Aggregations: [
               {
                 Name: "options",
@@ -517,6 +530,24 @@ sap.ui.define([
           },
           {
             Group: "Element",
+            Class: com.smod.ux.mat.controls.SelectList,
+            Type: "MdSelectList",
+            Description: "Select List (MD)",
+            DefaultProps: {
+              label: "Select from a wide list",
+              placeholder: "Search for entries",
+              valueSet: [
+                {key: "01", value: "Value 1"},
+                {key: "02", value: "Value 2"}
+              ]
+            },
+            BindingProperties:{
+              ValueField: {Name: "selectedKey", Type: "string", Multiple: false },
+              ValueListField: {Name: "valueSet", LabelField: "value", KeyField: "key", ValueField: "key" }
+            }
+          },
+          {
+            Group: "Element",
             Class: com.smod.ux.mat.controls.Switch,
             Type: "MdSwitch",
             Description: "Switch (MD)",
@@ -556,6 +587,29 @@ sap.ui.define([
           //     },
           //   ],
           // },
+          {
+            Group: "Element",
+            Class: com.thy.ux.per.controls.MessageAlert,
+            DefaultProps: {
+              showIcon: true,
+              text: "Message will be displayed like this!",
+              title: "Default Title",
+              type: "Information"
+            },
+            Type: "MessageAlert",
+            Description: "Message Alert",
+          },
+          {
+            Group: "Element",
+            Class: sap.m.MessageStrip,
+            DefaultProps: {
+              showIcon: true,
+              text: "Message will be displayed like this!",
+              type: "Information"
+            },
+            Type: "MessageStrip",
+            Description: "Message Strip",
+          },
           {
             Group: "Element",
             Class: sap.m.Label,
