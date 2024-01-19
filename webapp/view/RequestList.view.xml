@@ -10,6 +10,7 @@
 >
     <Page showHeader="false">
         <Table
+            id="idRequestList"
             items="{/RequestHeaderSet}"
             noDataText="{i18n>REQUEST_LIST_EMPTY}"
         >
@@ -28,7 +29,6 @@
                         >
                             <md:leadingIcon>
                                 <md:Icon
-                                    
                                     icon="person_add"
                                     tooltip="Yeni talep"
                                 />
@@ -51,7 +51,7 @@
                 <Column>
                     <Text text="Talep Başlığı" />
                 </Column>
-                 <Column
+                <Column
                     minScreenWidth="Tablet"
                     demandPopin="true"
                 >
@@ -63,7 +63,6 @@
                 >
                     <Text text="Son Değişiklik" />
                 </Column>
-               
                 <Column
                     hAlign="Center"
                     width="10rem"
@@ -78,24 +77,28 @@
                             text="{RequestTitle}"
                             tooltip="{RequestId}"
                         />
-                       
-                        <ObjectStatus text="{path:'WorkflowStatus'}" state="{path:'WorkflowStatus', formatter:'.formatter.getWfStatusState'}"/>
-                         <ObjectIdentifier
-                            title="{CreatedBy}"
+                        <ObjectStatus
                             text="{
-                                path: 'CreationDate',
-                                type: 'sap.ui.model.odata.type.DateTime',
-                                formatOptions: {
-                                    pattern: 'dd.MM.yyyy'
-                                }
-                            } - {
-                                path: 'CreationTime',
-                                type: 'sap.ui.model.odata.type.Time',
-                                formatOptions: {
-                                    pattern: 'HH:mm'
-                                }
+                                path: 'WorkflowStatus'
+                            }"
+                            state="{
+                                path: 'WorkflowStatus',
+                                formatter: '.formatter.getWfStatusState'
                             }"
                         />
+                        <Text text="{
+                            path: 'CreationDate',
+                            type: 'sap.ui.model.odata.type.DateTime',
+                            formatOptions: {
+                                pattern: 'dd.MM.yyyy'
+                            }
+                        } - {
+                            path: 'CreationTime',
+                            type: 'sap.ui.model.odata.type.Time',
+                            formatOptions: {
+                                pattern: 'HH:mm'
+                            }
+                        }" />
                         <HBox
                             justifyContent="Center"
                             alignItems="Center"

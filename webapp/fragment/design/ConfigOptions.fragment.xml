@@ -72,6 +72,25 @@
                     selected="{designView>/FieldProperties/Bindable}"
                     select=".onFieldPropertyChanged"
                 />
+                 <Label text="Çıktıda hariç tut" />
+                <CheckBox
+                tooltip="Veri alanı olup çıktıda yer almayan alanları belirtir"
+                    selected="{designView>/FieldProperties/ExcludeFromPrintOut}"
+                    select=".onFieldPropertyChanged"
+                />
+                <Label text="Bölüm alanı" />
+                <Select
+                tooltip="Çıktıda bölüm olan alanların seviyesini belirler"
+                    selectedKey="{designView>/FieldProperties/FormSection}"
+                    change=".onFieldPropertyChanged"
+                >
+                    <items>
+                        <core:Item key="" text="Standart alan"></core:Item>
+                        <core:Item key="P" text="Ana bölüm"></core:Item>
+                        <core:Item key="S" text="Alt bölüm"></core:Item>
+                    </items>
+
+                </Select>
             </f:content>
         </f:SimpleForm>
         <!-- </Panel> -->

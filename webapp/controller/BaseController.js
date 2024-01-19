@@ -108,7 +108,7 @@ sap.ui.define([
 			}
 
 			this.showMessage({
-				text: this.getText(sMessage, aMessageParam),
+				html: this.getText(sMessage, aMessageParam),
 				title: this.getText(sTitle),
 				icon: sIcon,
 				showConfirmButton: sIcon !== "success",

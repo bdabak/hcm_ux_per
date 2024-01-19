@@ -33,7 +33,7 @@ sap.ui.define(
 
         this.getRouter()
           .getRoute("requestdetail")
-          .attachPatternMatched(this._onRequestDetailMatched, this);
+          .attachPatternMatched(this._handleRequestDetailMatched, this);
       },
       /* =========================================================== */
       /* Event handlers                                              */
@@ -47,6 +47,202 @@ sap.ui.define(
         } else {
           const oRouter = this.getOwnerComponent().getRouter();
           oRouter.navTo("requestlist", {}, {}, true);
+        }
+      },
+
+      onWizardNextStep: async function (oEvent) {
+        const fnCallback = oEvent.getParameter("callbackFn");
+        const oCurrentStep = oEvent.getParameter("currentStep");
+        const oTargetStep = oEvent.getParameter("targetStep");
+        const oViewModel = this.getModel("detailView");
+        const sMode = oViewModel.getProperty("/Mode");
+
+        if (sMode === "CREATE") {
+          this._handleNextStepCreate(fnCallback, oCurrentStep, oTargetStep);
+        } else if (sMode === "EDIT") {
+          this._handleNextStepEdit(fnCallback, oCurrentStep, oTargetStep);
+        }
+      },
+      onWizardPrevStep: function (oEvent) {
+        const fnCallback = oEvent.getParameter("callbackFn");
+
+        if (typeof fnCallback === "function") {
+          fnCallback();
+        }
+      },
+
+      onSaveAsDraft: async function () {
+        try {
+          let bSuccess = await this._saveRequestDetails();
+
+          this._triggerUploadAttachments();
+
+          if (bSuccess) {
+            this.toastMessage(
+              "S",
+              "MESSAGE_SUCCESSFUL",
+              "REQUEST_SAVED_AS_DRAFT",
+              []
+            );
+          }
+        } catch (e) {
+          //--Error message given already
+        }
+      },
+      onSendForApproval: function () {},
+      onFileTypeMismatch: function () {
+        this.toastMessage("E", "MESSAGE_FAILED", "FILE_TYPE_MISMATCH", []);
+      },
+      onFileSizeExceeded: function () {
+        this.toastMessage("E", "MESSAGE_FAILED", "FILE_SIZE_EXCEEDED", []);
+      },
+      onBeforeUploadStarts: function (oEvent) {
+        const oModel = this.getModel();
+        const oUploadSet = this.byId("idRequestAttachmentUpload");
+        const oItem = oEvent.getParameter("item");
+        //--Refresh security token
+        oModel.refreshSecurityToken();
+
+        oUploadSet.removeHeaderField("x-csrf-token");
+        oUploadSet.removeHeaderField("Content-Disposition");
+        oUploadSet.addHeaderField(
+          new sap.ui.core.Item({
+            key: "x-csrf-token",
+            text: oModel.getSecurityToken(),
+          })
+        );
+
+        oUploadSet.addHeaderField(
+          new sap.ui.core.Item({
+            key: "Content-Disposition",
+            text: encodeURIComponent(oItem.getFileName()),
+          })
+        );
+      },
+      onUploadCompleted: function () {
+        const oUploadSet = this.byId("idRequestAttachmentUpload");
+
+        oUploadSet.removeAllIncompleteItems();
+
+        this.toastMessage(
+          "S",
+          "MESSAGE_SUCCESSFUL",
+          "FILE_UPLOAD_COMPLETE",
+          []
+        );
+        this._refreshAttachmentList();
+      },
+      onFileDelete: function (oEvent) {
+        oEvent.preventDefault();
+
+        const oItem = oEvent.getParameter("item");
+        const oModel = this.getModel();
+
+        if (!oItem) {
+          return;
+        }
+
+        const doDelete = () => {
+          const sPath = oModel.createKey("/RequestAttachmentSet", {
+            AttachmentId: oItem.data("attachment-id"),
+          });
+          this.openBusyFragment("ATTACHMENT_IS_BEING_DELETED");
+          oModel.remove(`${sPath}/$value`, {
+            success: () => {
+              this.toastMessage(
+                "S",
+                "MESSAGE_SUCCESSFUL",
+                "ATTACHMENT_DELETED",
+                []
+              );
+              this._refreshAttachmentList();
+            },
+            error: () => {
+              this._refreshAttachmentList();
+            },
+          });
+        };
+
+        this.confirmDialog({
+          title: this.getText("DELETE_CONFIRMATION", []),
+          html: this.getText("ATTACHMENT_WILL_BE_REMOVED", []),
+          icon: "warning",
+          confirmButtonText: this.getText("DELETE_ACTION", []),
+          confirmButtonColor: "#3085d6",
+          confirmCallbackFn: doDelete.bind(this),
+        });
+      },
+      onTriggerUpload: function () {
+        const oUploadSet = this.byId("idRequestAttachmentUpload");
+
+        if (!oUploadSet) {
+          return;
+        }
+
+        const aItems = oUploadSet.getIncompleteItems();
+
+        if (aItems.length === 0) {
+          this.toastMessage(
+            "W",
+            "MESSAGE_WARNING",
+            "ATTACHMENT_SHOULD_BE_ADDED",
+            []
+          );
+          return;
+        }
+
+        this._triggerUploadAttachments();
+      },
+      /* =========================================================== */
+      /* Private methods                                             */
+      /* =========================================================== */
+      _handleRequestDetailMatched: function (oEvent) {
+        const sRequestId = oEvent.getParameter("arguments").requestId;
+        const oViewModel = this.getModel("detailView");
+
+        oViewModel.setData(this._initiateModel());
+
+        this.byId("idRequestWizard").initiateWizardState();
+
+        if (sRequestId === "NEW") {
+          oViewModel.setProperty("/PageTitle", this.getText("NEW_REQUEST", []));
+          oViewModel.setProperty("/Mode", "CREATE");
+          this._getRequestDefaults();
+        } else {
+          oViewModel.setProperty(
+            "/PageTitle",
+            this.getText("EDIT_REQUEST", [])
+          );
+          oViewModel.setProperty("/Mode", "EDIT");
+          oViewModel.setProperty("/RequestHeader/RequestId", sRequestId);
+          this._getRequest();
+        }
+      },
+
+      _initiateModel: function () {
+        return {
+          Busy: false,
+          PageTitle: null,
+          Mode: null,
+          RequestHeader: {
+            RequestDetailSet: [],
+          },
+          RequestAttachmentSet: [],
+          ProcessHeader: {},
+          ProcessDetail: {},
+          FormHeader: {
+            FormComponentSet: [],
+          },
+          ProcessFieldSet: [],
+          ProcessFieldValueSet: [],
+          ProcessFieldBindingSet: [],
+          ComponentPool: ComponentPool.loadPool(),
+        };
+      },
+      _invalidateDetailPage: function () {
+        const oBox = this.byId("idRequestDetailsBox");
+        if (oBox) {
+          oBox.destroyItems();
         }
       },
       _handleNextStepCreate: async function (
@@ -153,53 +349,6 @@ sap.ui.define(
           fnCallback();
         }
       },
-      onWizardNextStep: async function (oEvent) {
-        const fnCallback = oEvent.getParameter("callbackFn");
-        const oCurrentStep = oEvent.getParameter("currentStep");
-        const oTargetStep = oEvent.getParameter("targetStep");
-        const oViewModel = this.getModel("detailView");
-        const sMode = oViewModel.getProperty("/Mode");
-
-        if (sMode === "CREATE") {
-          this._handleNextStepCreate(fnCallback, oCurrentStep, oTargetStep);
-        } else if (sMode === "EDIT") {
-          this._handleNextStepEdit(fnCallback, oCurrentStep, oTargetStep);
-        }
-      },
-      onWizardPrevStep: function (oEvent) {
-        const fnCallback = oEvent.getParameter("callbackFn");
-
-        if (typeof fnCallback === "function") {
-          fnCallback();
-        }
-      },
-
-      onSaveAsDraft: async function () {
-        try {
-          let bSuccess = await this._saveRequestDetails();
-          if (bSuccess) {
-            this.toastMessage(
-              "S",
-              "MESSAGE_SUCCESSFUL",
-              "REQUEST_SAVED_AS_DRAFT",
-              []
-            );
-          }
-        } catch (e) {
-          //--Error message given already
-        }
-      },
-      onSendForApproval: function () {},
-
-      /* =========================================================== */
-      /* Private methods                                             */
-      /* =========================================================== */
-      _invalidateDetailPage: function () {
-        const oBox = this.byId("idRequestDetailsBox");
-        if (oBox) {
-          oBox.destroyItems();
-        }
-      },
       _constructUI: function () {
         const oBox = this.byId("idRequestDetailsBox");
         const oViewModel = this.getModel("detailView");
@@ -252,6 +401,42 @@ sap.ui.define(
               "ElementUid",
               oElem.ElementUid,
             ]);
+
+            if (oElem.ElementId === "idMdChipComponent1304933955") {
+              if (typeof oElementInstance.attachChanged === "function") {
+                const oChangeFunc = new Function(
+                  "e",
+                  ` let bSelected = e.getSource().getSelected() || false;
+                    const oTabs = this.byId("idMdTabContainerComponent2502418796") || sap.ui.getCore().byId("idMdTabContainerComponent2502418796");
+                    if(bSelected){
+                      if(oTabs){
+                        oTabs.setActiveTabIndex(1);
+                          oTabs.getAggregation("tabs")[0].setActive(false);
+                          oTabs.getAggregation("tabPanels")[0].setHidden(true);
+                          oTabs.getAggregation("tabs")[1].setActive(true);
+                          oTabs.getAggregation("tabPanels")[1].setHidden(false);
+                          this.toastMessage("S", "MESSAGE_SUCCESSFUL", "TITLE_ACTIVE");
+
+                          var body = $("html, body");
+                          body.stop().animate({scrollTop:oTabs.$().offset().top}, '500');
+                      }
+                    }else{
+                        if(oTabs){
+                          oTabs.setActiveTabIndex(0);
+                          oTabs.getAggregation("tabs")[0].setActive(true);
+                          oTabs.getAggregation("tabPanels")[0].setHidden(false);
+                          oTabs.getAggregation("tabs")[1].setActive(false);
+                          oTabs.getAggregation("tabPanels")[1].setHidden(true);
+                        }
+                    }
+                `
+                ).bind(this);
+
+                oElementInstance.attachChanged((e) => {
+                  oChangeFunc(e);
+                });
+              }
+            }
 
             if (oProcessField && oComp?.BindingProperties) {
               if (oComp.BindingProperties?.ValueField) {
@@ -552,111 +737,6 @@ sap.ui.define(
 
         return;
       },
-      _initiateModel: function () {
-        return {
-          Busy: false,
-          PageTitle: null,
-          Mode: null,
-          RequestHeader: {
-            RequestDetailSet: [],
-          },
-          RequestAttachmentSet: [],
-          ProcessHeader: {},
-          ProcessDetail: {},
-          FormHeader: {
-            FormComponentSet: [],
-          },
-          ProcessFieldSet: [],
-          ProcessFieldValueSet: [],
-          ProcessFieldBindingSet: [],
-          ComponentPool: ComponentPool.loadPool(),
-        };
-      },
-      _onRequestDetailMatched: function (oEvent) {
-        const sRequestId = oEvent.getParameter("arguments").requestId;
-        const oViewModel = this.getModel("detailView");
-
-        oViewModel.setData(this._initiateModel());
-
-        this.byId("idRequestWizard").initiateWizardState();
-
-        if (sRequestId === "NEW") {
-          oViewModel.setProperty("/PageTitle", this.getText("NEW_REQUEST", []));
-          oViewModel.setProperty("/Mode", "CREATE");
-          this._getRequestDefaults();
-        } else {
-          oViewModel.setProperty(
-            "/PageTitle",
-            this.getText("EDIT_REQUEST", [])
-          );
-          oViewModel.setProperty("/Mode", "EDIT");
-          oViewModel.setProperty("/RequestHeader/RequestId", sRequestId);
-          this._getRequest();
-        }
-      },
-      _getRequest: function () {
-        const oModel = this.getModel();
-        const oViewModel = this.getModel("detailView");
-        const oRequest = oViewModel.getProperty("/RequestHeader");
-        const that = this;
-        const sPath = oModel.createKey("/RequestHeaderSet", {
-          RequestId: oRequest.RequestId,
-          Version: "001",
-        });
-
-        //--Avoid duplicate entries clear the page
-        this._invalidateDetailPage();
-
-        this.openBusyFragment("REQUEST_DETAILS_BEING_READ");
-        oModel.read(sPath, {
-          urlParameters: {
-            $expand: `ProcessHeader,RequestDetailSet,ProcessHeader/FormHeader,ProcessHeader/FormHeader/FormComponentSet,ProcessHeader/FormHeader/FormComponentSet/FormComponentPropertySet,ProcessHeader/ProcessFieldSet,ProcessHeader/ProcessFieldSet/ProcessFieldValueSet,ProcessHeader/ProcessFieldSet/ProcessFieldBindingSet`,
-          },
-          success: function (oData) {
-            console.log(oData);
-            that._setProcessDataFromRequest(oData);
-
-            //--Close busy dialog
-            that.closeBusyFragment();
-          },
-          error: function (oError) {
-            // resolve(false);
-            //--Error occurred
-            that.closeBusyFragment();
-          },
-        });
-      },
-      _setProcessDataFromRequest: function (oData) {
-        const oViewModel = this.getModel("detailView");
-        const oProcessHeader = _.cloneDeep(oData.ProcessHeader);
-        const aRequestDetail = _.omit(
-          _.cloneDeep(oData.RequestDetailSet.results),
-          ["__metadata"]
-        );
-
-        if (oData.OrgUnitCode === "00000000") {
-          oData.OrgUnitCode = null;
-        }
-
-        //--Set Request Header
-        oViewModel.setProperty(
-          "/RequestHeader",
-          _.omit(oData, [
-            "__metadata",
-            "ProcessHeader",
-            "FormHeader",
-            "RequestDetailSet",
-          ])
-        );
-
-        oViewModel.setProperty(
-          "/RequestHeader/RequestDetailSet",
-          aRequestDetail
-        );
-
-        //--Set process data
-        this._setProcessData(oProcessHeader, null);
-      },
       _getRequestDefaults: function () {
         const oModel = this.getModel();
         const oViewModel = this.getModel("detailView");
@@ -729,6 +809,76 @@ sap.ui.define(
 
         return p;
       },
+      _getRequest: function () {
+        const oModel = this.getModel();
+        const oViewModel = this.getModel("detailView");
+        const oRequest = oViewModel.getProperty("/RequestHeader");
+        const that = this;
+        const sPath = oModel.createKey("/RequestHeaderSet", {
+          RequestId: oRequest.RequestId,
+          Version: "001",
+        });
+
+        //--Avoid duplicate entries clear the page
+        this._invalidateDetailPage();
+
+        this.openBusyFragment("REQUEST_DETAILS_BEING_READ");
+        oModel.read(sPath, {
+          urlParameters: {
+            $expand: `ProcessHeader,RequestDetailSet,ProcessHeader/FormHeader,ProcessHeader/FormHeader/FormComponentSet,ProcessHeader/FormHeader/FormComponentSet/FormComponentPropertySet,ProcessHeader/ProcessFieldSet,ProcessHeader/ProcessFieldSet/ProcessFieldValueSet,ProcessHeader/ProcessFieldSet/ProcessFieldBindingSet,RequestAttachmentSet`,
+          },
+          success: function (oData) {
+            that._setProcessDataFromRequest(oData);
+
+            //--Close busy dialog
+            that.closeBusyFragment();
+          },
+          error: function (oError) {
+            // resolve(false);
+            //--Error occurred
+            that.closeBusyFragment();
+          },
+        });
+      },
+      _setProcessDataFromRequest: function (oData) {
+        const oViewModel = this.getModel("detailView");
+        const oProcessHeader = _.cloneDeep(oData.ProcessHeader);
+        const aRequestDetail = _.omit(
+          _.cloneDeep(oData.RequestDetailSet.results),
+          ["__metadata"]
+        );
+
+        const aRequestAttachment = _.omit(
+          _.cloneDeep(oData.RequestAttachmentSet.results),
+          ["__metadata"]
+        );
+
+        if (oData.OrgUnitCode === "00000000") {
+          oData.OrgUnitCode = null;
+        }
+
+        //--Set Request Header
+        oViewModel.setProperty(
+          "/RequestHeader",
+          _.omit(oData, [
+            "__metadata",
+            "ProcessHeader",
+            "FormHeader",
+            "RequestDetailSet",
+            "RequestAttachmentSet",
+          ])
+        );
+
+        oViewModel.setProperty(
+          "/RequestHeader/RequestDetailSet",
+          aRequestDetail
+        );
+
+        oViewModel.setProperty("/RequestAttachmentSet", aRequestAttachment);
+
+        //--Set process data
+        this._setProcessData(oProcessHeader, null);
+      },
       _getProcessDetails: function () {
         const oModel = this.getModel();
         const oViewModel = this.getModel("detailView");
@@ -763,6 +913,7 @@ sap.ui.define(
 
         return p;
       },
+
       _setProcessData: function (oProcessHeader, fnCallback) {
         const oViewModel = this.getModel("detailView");
         const sMode = oViewModel.getProperty("Mode");
@@ -790,9 +941,8 @@ sap.ui.define(
                       oFieldValue.Key;
                     oValue[oComp.BindingProperties.ValueListField.LabelField] =
                       oFieldValue.Value;
-                    oValue[
-                      oComp.BindingProperties.ValueListField.ValueField
-                    ] = aValues.includes(oFieldValue.Key);
+                    oValue[oComp.BindingProperties.ValueListField.ValueField] =
+                      aValues.includes(oFieldValue.Key);
                     break;
                   default:
                     if (oComp.BindingProperties?.ValueListField) {
@@ -893,12 +1043,16 @@ sap.ui.define(
               if (
                 oRequestField &&
                 oRequestField.hasOwnProperty("ProcessFieldValue") &&
-                oField?.ProcessFieldValue !== null
+                oRequestField?.ProcessFieldValue !== null
+                // oField?.ProcessFieldValue !== null
               ) {
                 const sFieldLength = oRequestField.ProcessFieldValue.length;
                 if (
                   oRequestField.ProcessFieldValue === "true" ||
-                  oRequestField.ProcessFieldValue === "false"
+                  oField.Type === "MdCheckBox" ||
+                  oField.Type === "MdSwitch" ||
+                  oField.Type === "CheckBox" ||
+                  oField.Type === "MdRadio"
                 ) {
                   oProcessDetail[oField.ProcessFieldId].Value =
                     oRequestField.ProcessFieldValue === "true";
@@ -916,10 +1070,17 @@ sap.ui.define(
                 } else {
                   oProcessDetail[oField.ProcessFieldId].Value =
                     oRequestField.ProcessFieldValue;
+                  if(oProcessDetail[oField.ProcessFieldId].Value === ''){
+                    oProcessDetail[oField.ProcessFieldId].Value = null;
+                  }
                 }
               }
 
-              oProcessDetail[oField.ProcessFieldId]["ValueList"] = castValueList(oField, oProcessDetail[oField.ProcessFieldId].Values );
+              oProcessDetail[oField.ProcessFieldId]["ValueList"] =
+                castValueList(
+                  oField,
+                  oProcessDetail[oField.ProcessFieldId].Values
+                );
             }
 
             //--Property bindings
@@ -932,9 +1093,6 @@ sap.ui.define(
             oField.ProcessFieldValueSet.results.forEach((oValue) => {
               let oValueModified = _.omit(oValue, ["__metadata"]);
               aProcessFieldValueSet.push(oValueModified);
-              // oProcessDetail[oField.ProcessFieldId]["ValueList"].push(
-              //   oValueModified
-              // );
             });
           });
         } catch (e) {
@@ -969,7 +1127,7 @@ sap.ui.define(
         const constructValueFromArray = (aVal) => {
           let sVal;
           aVal.forEach((oVal) => {
-            sVal = sVal ? sVal + ",'" + oVal + "'" : "['" + oVal + "'";
+            sVal = sVal ? sVal + ',"' + oVal + '"' : '["' + oVal + '"';
           });
           return sVal + "]";
         };
@@ -1035,6 +1193,67 @@ sap.ui.define(
 
         return p;
       },
+      _refreshAttachmentList: function () {
+        const oModel = this.getModel();
+        const oViewModel = this.getModel("detailView");
+        const oRequest = oViewModel.getProperty("/RequestHeader");
+        const that = this;
+        const sPath =
+          oModel.createKey("/RequestHeaderSet", {
+            RequestId: oRequest.RequestId,
+            Version: oRequest.Version,
+          }) + "/RequestAttachmentSet";
+
+        this.openBusyFragment();
+
+        oViewModel.setProperty("/RequestAttachmentSet", []);
+
+        oModel.read(sPath, {
+          // urlParameters: {
+          //   $expand: `RequestAttachmentSet`,
+          // },
+          success: function (oData) {
+            oViewModel.setProperty(
+              "/RequestAttachmentSet",
+              _.omit(oData.results, ["__metadata"])
+            );
+            //--Close busy dialog
+            that.closeBusyFragment();
+          },
+          error: function (oError) {
+            //--Error occurred
+            that.closeBusyFragment();
+          },
+        });
+      },
+      _triggerUploadAttachments: function () {
+        const oUploadSet = this.byId("idRequestAttachmentUpload");
+        const oViewModel = this.getModel("detailView");
+        const oRequestHeader = oViewModel.getProperty("/RequestHeader");
+
+        if (!oUploadSet) {
+          return;
+        }
+
+        const aItems = oUploadSet.getIncompleteItems();
+
+        if (aItems.length === 0) {
+          return;
+        }
+        const oModel = this.getModel();
+
+        const sPath = oModel.createKey("RequestHeaderSet", {
+          RequestId: oRequestHeader.RequestId,
+          Version: oRequestHeader.Version,
+        });
+
+        //--Set upload URL
+        oUploadSet.setUploadUrl(
+          `${oModel.sServiceUrl}/${sPath}/RequestAttachmentSet`
+        );
+
+        oUploadSet.upload();
+      },
       _saveRequestDetails: function () {
         const oModel = this.getModel();
         const oViewModel = this.getModel("detailView");
@@ -1057,6 +1276,15 @@ sap.ui.define(
                 this._showErrors(oData.ReturnSet.results);
                 resolve(false);
               }
+
+              //--Save to get upload url
+              if (oData.RequestHeader.OrgUnitCode === "00000000") {
+                oData.RequestHeader.OrgUnitCode = null;
+              }
+              oViewModel.setProperty("/RequestHeader", {
+                ...oData.RequestHeader,
+              });
+
               resolve(true);
               this.closeBusyFragment();
             },

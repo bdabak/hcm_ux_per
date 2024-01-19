@@ -30,7 +30,28 @@ sap.ui.define(
           });
         }
       },
+
       onDeleteRequest: function(oEvent){
+        const sRequestId = oEvent.getSource().data("request-id");
+        const oModel = this.getModel();
+        const sPath = oModel.createKey("/RequestHeaderSet", {
+          RequestId: sRequestId,
+          Version: "001"
+        });
+
+        oModel.remove(sPath,{
+          success:()=>{
+            this._refreshList();
+          },
+          error:()=>{
+
+          }
+        })
+        
+      },
+
+      _refreshList:function(){
+        this.byId("idRequestList").getBinding("items").refresh(true);
       }
     });
   }

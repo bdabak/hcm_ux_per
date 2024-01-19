@@ -26,7 +26,10 @@ sap.ui.define([], function () {
                 case "REJECTED":
                     return "Error";
             }
-        }
+        },
+        constructDownloadUrl: function(sId){
+            return  `/sap/opu/odata/sap/ZHCM_UX_PER_SRV/RequestAttachmentSet('${sId}')/$value`;
+        },
 
     };
 

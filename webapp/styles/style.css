@@ -135,3 +135,25 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
 .designPanel .sapMTB {
   height: 2.75rem !important;
 }
+
+.uploadSetCustom .sapMLIB{
+  border-bottom: none !important;
+}
+
+
+.flex-gap-xs{
+  gap: 0.15rem;
+}
+
+.flex-gap-sm{
+  gap: 0.3rem;
+}
+
+.flex-gap-md{
+  gap: 0.5rem;
+}
+
+.flex-gap-lg{
+  gap: 0.75rem;
+}
+

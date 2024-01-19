@@ -2,39 +2,60 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:upload="sap.m.upload"
+    xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:thy="com.thy.ux.per.controls"
 >
-    <upload:UploadSet
-        id="UploadSet"
-        instantUpload="false"
-        showIcons="false"
-        uploadEnabled="true"
-        terminationEnabled="false"
-        fileTypes="pdf,doc,docx,xls,xlsx,ppt,pptx"
-        maxFileNameLength="50"
-        maxFileSize="10"
-        mediaTypes="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        uploadUrl=""
-        items="{
-            path: 'detailView>/RequestAttachmentSet',
-            templateShareable: false
-        }"
-    >
-        <upload:items>
-            <upload:UploadSetItem
-                fileName="{fileName}"
-                mediaType="{mediaType}"
-                url="{url}"
-                thumbnailUrl="{thumbnailUrl}"
-            >
-                <upload:attributes>
-                    <ObjectAttribute
-                        title="{title}"
-                        text="{text}"
-                        active="{active}"
-                    />
-                </upload:attributes>
-                
-            </upload:UploadSetItem>
-        </upload:items>
-    </upload:UploadSet>
+    <VBox>
+        <upload:UploadSet
+            id="idRequestAttachmentUpload"
+            instantUpload="false"
+            beforeUploadStarts=".onBeforeUploadStarts"
+            fileSizeExceeded=".onFileSizeExceeded"
+            fileTypeMismatch=".onFileTypeMismatch"
+            uploadCompleted=".onUploadCompleted"
+            terminationEnabled="false"
+            fileTypes="pdf,doc,docx,xls,xlsx,ppt,pptx"
+            maxFileNameLength="50"
+            maxFileSize="5"
+            noDataText="{i18n>NO_ATTACHMENTS_FOUND}"
+            mediaTypes="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            items="{
+                path: 'detailView>/RequestAttachmentSet',
+                templateShareable: false
+            }"
+            class="uploadSetCustom"
+        >
+            <upload:toolbar>
+                <OverflowToolbar>
+                    <Title text="Ek Dosyalar" />
+                    <ToolbarSpacer />
+                    <Button type="Emphasized" press=".onTriggerUpload" text="{i18n>UPLOAD_ACTION}"
+                        icon="sap-icon://upload"
+                        visible="{= ${detailView>/RequestHeader/RequestId} !== '' }"
+                    /> 
+                </OverflowToolbar>
+            </upload:toolbar>
+            <upload:items>
+                <upload:UploadSetItem
+                    fileName="{detailView>FileName}"
+                    mediaType="{detailView>MimeType}"
+                    url="{
+                        path: 'detailView>AttachmentId',
+                        formatter: '.formatter.constructDownloadUrl'
+                    }"
+                    visibleEdit="false"
+                    removePressed=".onFileDelete"
+                    cd:attachment-id="{detailView>AttachmentId}"
+                />
+            </upload:items>
+        </upload:UploadSet>
+        <thy:MessageAlert
+        visible="{= ${detailView>/RequestHeader/RequestId} === '' }"
+            type="Information"
+            text="{i18n>ATTACHMENT_UPLOAD_PROCEDURE}"
+            title="{i18n>ABOUT_ATTACHMENT_UPLOAD_PROCEDURE}"
+            customIcon="campaign"
+            showIcon="true"
+        />
+    </VBox>
 </core:FragmentDefinition>

@@ -18,8 +18,8 @@
   display: flex;
   align-items: center;
   position: relative;
-  margin-bottom: var(--bs-alert-margin);
-  margin-top: var(--bs-alert-margin);
+  /* margin-bottom: var(--bs-alert-margin);
+  margin-top: var(--bs-alert-margin); */
   border: 1px solid var(--bs-alert-color);
   border-radius: var(--bs-alert-border-radius);
 }

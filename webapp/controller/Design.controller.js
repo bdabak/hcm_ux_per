@@ -45,8 +45,8 @@ sap.ui.define(
           IconList: this._getIconList(),
           FormTitle: "",
           TreeRefreshToken: new Date().getTime(),
-          State:null,
-          FormId: null
+          State: null,
+          FormId: null,
         });
 
         oViewModel.setSizeLimit(2000);
@@ -61,159 +61,14 @@ sap.ui.define(
           .attachPatternMatched(this._onDesignMatched, this);
       },
 
-      _prepareOdataPayload: function (bRefresh = false, bAs = false) {
-        var oViewModel = this.getModel("designView");
-        var aCompList = oViewModel.getProperty("/ComponentList");
-        var sFormId = bAs ? "" : this._currentFormId;
-
-        var oPayload = {
-          FormId: sFormId,
-          FormTitle: oViewModel.getProperty("/FormTitle"),
-          FormComponentSet: bRefresh ? { results: [] } : [],
-        };
-
-        if(bAs){
-          aCompList.forEach((oComp,i)=>{
-            const sNewUid = this._getNewUid();
-            var aChild = _.filter(aCompList, ["ParentUid", oComp.ElementUid]) || [];
-            aChild.forEach((oChildComp,j)=>{
-              aChild[j].ParentUid = sNewUid;
-            });
-            aCompList[i].ElementUid = sNewUid;
-          });
-          debugger;
-        }
-
-        aCompList.forEach((oComp) => {
-          var oCompSet = {
-            FormId: sFormId,
-            FieldId: oComp.FieldId,
-            FieldDescription: oComp.FieldDescription,
-            Bindable: oComp.Bindable,
-            ElementUid: oComp.ElementUid,
-            ElementId: oComp.ElementId,
-            ParentUid: oComp.ParentUid,
-            Type: oComp.Type,
-            AggregationName: oComp.AggregationName,
-            FormComponentPropertySet: bRefresh ? { results: [] } : [],
-          };
-
-          var aOptions = this._getComponentProperties(oComp.Component) || [];
-
-          aOptions.forEach((oOpt) => {
-            if (oOpt.Value !== null) {
-
-              if(oOpt.Value === oOpt.DefaultValue){
-                return;
-              }
-
-              if (
-                Array.isArray(oOpt.Value) ||
-                typeof oOpt.Value === "object"
-              ) {
-                let iLen = Array.isArray(oOpt.Value) ? oOpt.Value.length : Object.keys(oOpt.Value.length) || 0;
-
-                if(iLen <= 0 ){
-                  return;
-                }
-                oOpt.Value = JSON.stringify(oOpt.Value);
-              }
-              
-              var oProp = {
-                FormId: sFormId,
-                ElementUid: oComp.ElementUid,
-                PropertyName: oOpt.Property,
-                PropertyValue: oOpt.Value.toString(),
-                PropertyType: oOpt.Type,
-                IsStyleClass: false,
-              };
-              bRefresh
-                ? oCompSet.FormComponentPropertySet.results.push(oProp)
-                : oCompSet.FormComponentPropertySet.push(oProp);
-            }
-          });
-
-          if (oComp.Component?.aCustomStyleClasses) {
-            [...oComp.Component?.aCustomStyleClasses].forEach((o, i) => {
-              var oProp = {
-                FormId: sFormId,
-                ElementUid: oComp.ElementUid,
-                PropertyName: "customStyle" + i,
-                PropertyValue: o.toString(),
-                PropertyType: "string",
-                IsStyleClass: true,
-              };
-              bRefresh
-                ? oCompSet.FormComponentPropertySet.results.push(oProp)
-                : oCompSet.FormComponentPropertySet.push(oProp);
-            });
-          }
-
-          bRefresh
-            ? oPayload.FormComponentSet.results.push(oCompSet)
-            : oPayload.FormComponentSet.push(oCompSet);
-        });
-
-        return oPayload;
-      },
-
       /* =========================================================== */
       /* event handlers                                              */
       /* =========================================================== */
       onSaveForm: async function () {
         this._handleSave(false);
       },
-      onSaveAsForm: function(){
+      onSaveAsForm: function () {
         this._handleSave(true);
-      },
-      _handleSave: async function(bAs = false){
-        var oViewModel = this.getModel("designView");
-        var oModel = this.getModel();
-        // var aCompList = oViewModel.getProperty("/ComponentList");
-        var that = this;
-
-        const { value: FormTitle } = await Swal.fire({
-          title: bAs ? "Formu Farklı Kaydet" : "Formu Kaydet",
-          input: "text",
-          inputLabel: "Formun tanımı",
-          inputPlaceholder: "Bir form tanımı giriniz",
-          inputValue: bAs ? oViewModel.getProperty("/FormTitle") + " Kopyası": oViewModel.getProperty("/FormTitle"),
-          inputAttributes: {
-            maxlength: "40",
-            autocapitalize: "off",
-            autocorrect: "off",
-          },
-          showCancelButton: true,
-          cancelButtonText: this.getText("CANCEL_ACTION", []),
-          inputValidator: (value) => {
-            if (!value) {
-              return "Form tanımı girmelisiniz!";
-            }
-          },
-        });
-        if (FormTitle) {
-          oViewModel.setProperty("/FormTitle", FormTitle);
-
-          var oPayload = this._prepareOdataPayload(false, bAs);
-
-          // console.log(oPayload);
-          this.openBusyFragment(bAs ? "SAVE_AS_IN_PROGRESS" : "SAVE_IN_PROGRESS", []);
-          oModel.create("/FormHeaderSet", oPayload, {
-            success: function (oData, oResponse) {
-              that.toastMessage("S", "MESSAGE_SUCCESSFUL", "FORM_SAVED", []);
-              that.closeBusyFragment();
-              if(bAs){
-                that.getRouter().navTo("design", {
-                  formId: oData.FormId
-                }, false);
-              }
-            },
-            error: function (oError) {
-              that.toastMessage("E", "MESSAGE_FAILED", "FORM_NOT_SAVED", []);
-              that.closeBusyFragment();
-            },
-          });
-        }
       },
       onCompTreeItemSelected: function (oEvent) {
         var oItem = oEvent.getParameter("listItem");
@@ -262,10 +117,10 @@ sap.ui.define(
           ElementId: oComp.ElementId,
           FieldId: oComp.FieldId,
           FieldDescription: oComp.FieldDescription,
-          Bindable: oComp.Bindable
+          Bindable: oComp.Bindable,
+          FormSection: oComp.FormSection,
+          ExcludeFromPrintOut: oComp.ExcludeFromPrintOut,
         });
-       
-        
       },
       onFieldPropertyChanged: function () {
         var oViewModel = this.getModel("designView");
@@ -280,17 +135,22 @@ sap.ui.define(
 
         var j = _.findIndex(aCompList, ["FieldId", oFieldProp.FieldId]);
 
-        if (j !== -1 && j !== i)  {
-          oViewModel.setProperty("/FieldProperties/FieldId", aCompList[i].FieldId);
-          this.alertMessage("E", "MESSAGE_ERROR", "DUPLICATE_FIELD_ID", [oFieldProp.FieldId]);
+        if (j !== -1 && j !== i) {
+          oViewModel.setProperty(
+            "/FieldProperties/FieldId",
+            aCompList[i].FieldId
+          );
+          this.alertMessage("E", "MESSAGE_ERROR", "DUPLICATE_FIELD_ID", [
+            oFieldProp.FieldId,
+          ]);
           return;
         }
 
-
         oFieldProp.FieldId = oFieldProp.FieldId?.replace(/\s/g, "");
 
-
-        if ( !oFieldProp.FieldDescription || !oFieldProp.FieldId ||
+        if (
+          !oFieldProp.FieldDescription ||
+          !oFieldProp.FieldId ||
           oFieldProp.FieldDescription?.trim().length === 0 ||
           oFieldProp.FieldId?.trim().length === 0
         ) {
@@ -302,10 +162,11 @@ sap.ui.define(
         aCompList[i].FieldId = oFieldProp.FieldId;
         aCompList[i].FieldDescription = oFieldProp.FieldDescription;
         aCompList[i].Bindable = oFieldProp.Bindable;
+        aCompList[i].FormSection = oFieldProp.FormSection;
+        aCompList[i].ExcludeFromPrintOut = oFieldProp.ExcludeFromPrintOut;
 
         oViewModel.setProperty("/ComponentList", aCompList);
         oViewModel.setProperty("/TreeRefreshToken", new Date().getTime());
-
       },
       onStyleUpdated: function (oEvent) {
         var aRemoved = oEvent.getParameter("removedTokens");
@@ -360,6 +221,111 @@ sap.ui.define(
         }
 
         this._openAddMenu(oElem, oSource);
+      },
+      onCopyComponent: function (oEvent) {
+        const oSource = oEvent.getSource();
+        const sRefComp = oSource.data("RefComp");
+
+        if (!sRefComp) {
+          return;
+        }
+
+        const oElem = $("#" + sRefComp).control()[0];
+
+        if (!oElem) {
+          oElem = this._getUIComponent(sRefComp);
+        }
+
+        const oViewModel = this.getModel("designView");
+        let aCompList = _.cloneDeep(oViewModel.getProperty("/ComponentList"));
+
+        const oComp = _.find(aCompList, ["ElementId", sRefComp]);
+
+        if (!oComp) {
+          this.toastMessage("E", "MESSAGE_ERROR", "COPY_ELEMENT_NOT_FOUND", []);
+          return;
+        }
+
+        const oParent = _.find(aCompList, ["ElementUid", oComp.ParentUid]);
+
+        if (!oParent) {
+          this.toastMessage(
+            "E",
+            "MESSAGE_ERROR",
+            "PARENT_ELEMENT_NOT_FOUND",
+            []
+          );
+          return;
+        }
+
+        let aNewCompList = [];
+
+        const copyRecursively = (o, sPUid) => {
+          let c = _.cloneDeep(o);
+          c.ElementId = `id${c.Type}Component${
+            crypto.getRandomValues(new Uint32Array(1))[0]
+          }`;
+          c.ElementUid = this._getNewUid();
+          c.ParentUid = sPUid;
+          c.FieldId = c.FieldId + "Copy";
+          c.Component = null;
+
+          aNewCompList.push(c);
+
+          const aChildren =
+            _.filter(aCompList, ["ParentUid", o.ElementUid]) || [];
+
+          aChildren.forEach((oChild) => {
+            copyRecursively(oChild, c.ElementUid);
+          });
+        };
+
+        //--Call recusrsively
+        copyRecursively(oComp, oParent.ElementUid);
+
+        aNewCompList.forEach((oNewComp)=>{
+          aCompList.push(oNewComp);
+        });
+
+        aNewCompList = [];
+        const rebuildCompList = (p) => {
+          let i = _.findIndex(aNewCompList, ["ElementUid", p.ElementUid]);
+
+          if (i === -1) {
+            aNewCompList.push(p);
+          }
+
+          let aChildren = _.filter(aCompList, ["ParentUid", p.ElementUid]);
+
+          aChildren.forEach((c) => {
+            let j = _.findIndex(aNewCompList, ["ElementUid", c.ElementUid]);
+            if (j === -1) {
+              aNewCompList.push(c);
+            }
+            rebuildCompList(c);
+          });
+        };
+
+        rebuildCompList(_.cloneDeep(aCompList[0]));
+
+
+        oViewModel.setProperty("/ComponentList", aNewCompList);
+        oViewModel.setProperty("/ComponentTree", []);
+
+        //--Regenerate payload and reconsturct UI
+        const oPayload = this._prepareOdataPayload(true, false);
+
+        oViewModel.setProperty("/ComponentList", []);
+        oViewModel.setProperty("/ComponentTree", []);
+
+        this._constructUI(oPayload);
+
+        this.toastMessage(
+          "S",
+          "MESSAGE_SUCCESSFUL",
+          "ELEMENT_COPIED_SUCCESSFULLY",
+          []
+        );
       },
       onDeleteComponent: function (oEvent) {
         var oSource = oEvent.getSource();
@@ -419,12 +385,12 @@ sap.ui.define(
             oEl = new sap.m.TextArea({
               value: {
                 path: "designView>Value",
-                formatter: (oObj)=>{
-                  return JSON.stringify(oObj)
-                }
+                formatter: (oObj) => {
+                  return JSON.stringify(oObj);
+                },
               },
-              rows:3,
-              width:"100%",
+              rows: 3,
+              width: "100%",
               change: this.onSaveConfiguration.bind(this),
             });
 
@@ -576,10 +542,10 @@ sap.ui.define(
         });
       },
 
-      getFieldDescription: function(sElementId, sToken){
+      getFieldDescription: function (sElementId, sToken) {
         var oComp = this._findUIComponent(sElementId);
-        if(!oComp){
-          return ""
+        if (!oComp) {
+          return "";
         }
         return `(${oComp.FieldDescription})`;
       },
@@ -670,9 +636,482 @@ sap.ui.define(
       onMoveDown: function (oEvent) {
         this._handleComponentSwap(oEvent, "Down");
       },
+      onDragStart: function (oEvent) {
+        var oTree = this.byId("idComponentTree");
+        var oBinding = oTree.getBinding("items");
+        var oDragSession = oEvent.getParameter("dragSession");
+        var oDraggedItem = oEvent.getParameter("target");
+        var iDraggedItemIndex = oTree.indexOfItem(oDraggedItem);
+        var aSelectedIndices = oTree.getBinding("items").getSelectedIndices();
+        var aSelectedItems = oTree.getSelectedItems();
+        var aDraggedItemContexts = [];
+
+        var oViewModel = this.getModel("designView");
+
+        oViewModel.setProperty("/ConfigOptions", []);
+
+        if (aSelectedItems.length > 0) {
+          aSelectedItems.forEach((oItem) => {
+            oTree.setSelectedItem(oItem, false);
+          });
+        }
+        //   // If items are selected, do not allow to start dragging from a item which is not selected.
+        //   if (aSelectedIndices.indexOf(iDraggedItemIndex) === -1) {
+        //     oEvent.preventDefault();
+        //   } else {
+        //     for (var i = 0; i < aSelectedItems.length; i++) {
+        //       aDraggedItemContexts.push(
+        //         oBinding.getContextByIndex(aSelectedIndices[i])
+        //       );
+        //     }
+        //   }
+        // } else {
+        aDraggedItemContexts.push(
+          oBinding.getContextByIndex(iDraggedItemIndex)
+        );
+        // }
+
+        oDragSession.setComplexData("hierarchymaintenance", {
+          draggedItemContexts: aDraggedItemContexts,
+        });
+      },
+
+      onDrop: function (oEvent) {
+        const oTree = this.byId("idComponentTree");
+        const oBinding = oTree.getBinding("items");
+        const oDragSession = oEvent.getParameter("dragSession");
+        const oDroppedItem = oEvent.getParameter("droppedControl");
+        const aDraggedItemContexts = oDragSession.getComplexData(
+          "hierarchymaintenance"
+        ).draggedItemContexts;
+        const iTreeItemIndex = oTree.indexOfItem(oDroppedItem);
+        const oNewParentContext = oBinding.getContextByIndex(iTreeItemIndex);
+        const oViewModel = this.getModel("designView");
+        const sDropPosition = oDragSession.getDropPosition();
+        //--Check if dragged item exists
+        if (aDraggedItemContexts.length === 0 || !oNewParentContext) {
+          return;
+        }
+
+        //--Get pool data for checks
+        const aCompPool = oViewModel.getProperty("/ComponentPool");
+
+        //--Avoid memory leaks
+        const aCompOrig = oViewModel.getProperty("/ComponentList");
+        let aCompList = _.cloneDeep(oViewModel.getProperty("/ComponentList"));
+
+        //--Find dragged - dropped component in the tree
+        const oParentTree = oViewModel.getProperty(
+          oDroppedItem.getBindingContextPath()
+        );
+        const oChildTree = oViewModel.getProperty(
+          aDraggedItemContexts[0].getPath()
+        );
+
+        if (!oParentTree || !oChildTree) {
+          this.toastMessage(
+            "E",
+            "MESSAGE_FAILED",
+            "DROP_NOT_FOUND_ON_TREE",
+            []
+          );
+          return;
+        }
+
+        if (
+          oParentTree.ElementId === oChildTree.ElementId ||
+          oParentTree.ParentId === oChildTree.ElementId
+        ) {
+          return;
+        }
+
+        //--Find components in the component list
+        const oParentComp = this._findUIComponent(
+          sDropPosition === "On" ? oParentTree.ElementId : oParentTree.ParentId,
+          null
+        );
+        const oChildComp = this._findUIComponent(oChildTree.ElementId, null);
+
+        //--Simulate component list without the node
+        let iCompIndex = _.findIndex(aCompList, [
+          "ElementId",
+          oChildTree.ElementId,
+        ]);
+
+        if (iCompIndex === -1 || !oParentComp || !oChildComp) {
+          this.toastMessage(
+            "E",
+            "MESSAGE_FAILED",
+            "DROP_NOT_FOUND_ON_LIST",
+            []
+          );
+          return;
+        }
+
+         //--Find parent and child is valid for each other
+         const oParentPool = aCompPool.find((o) => o.Type === oParentComp.Type);
+
+         if (!oParentPool) {
+           this.toastMessage(
+             "E",
+             "MESSAGE_FAILED",
+             "DROP_PARENT_ELEMENT_NOT_FOUND",
+             []
+           );
+           return;
+         }
+ 
+         if (!oParentPool?.Aggregations) {
+           this.toastMessage(
+             "E",
+             "MESSAGE_FAILED",
+             "DROP_PARENT_ELEMENT_NOT_APPLICABLE",
+             [oParentComp.Type]
+           );
+           return;
+         }
+ 
+         const oAggrPool = _.find(oParentPool?.Aggregations, {
+           Type: oChildComp.Type,
+         });
+ 
+         if (!oAggrPool) {
+           this.toastMessage(
+             "E",
+             "MESSAGE_FAILED",
+             "DROP_ELEMENT_NOT_VALID_AGGR_TYPE",
+             [oChildComp.Type, oParentComp.Type]
+           );
+           return;
+         }
+
+
+        //--Delete old position
+        let aCloneNode = [];
+
+        const calcCloneNode = (oRef, bRoot) => {
+          let oCloneComp = _.cloneDeep(oRef);
+          if (bRoot) {
+            //--Set new assignments
+            oCloneComp.ParentId = oParentComp.ElementId;
+            oCloneComp.ParentUid = oParentComp.ElementUid;
+            oCloneComp.AggregationName = oAggrPool.Name;
+          }
+          aCloneNode.push(oCloneComp);
+          const aChildNodes = _.filter(aCompList, [
+            "ParentUid",
+            oRef.ElementUid,
+          ]);
+
+          aChildNodes.forEach((oChildNode) => {
+            calcCloneNode(oChildNode, false);
+          });
+
+          //--Splice from array
+          const i = _.findIndex(aCompList, ["ElementUid", oRef.ElementUid]);
+          if (i !== -1) {
+            aCompList.splice(i, 1);
+          }
+        };
+
+        calcCloneNode(aCompList[iCompIndex], true);
+
+        //--Find drop index
+        let iDroppedIndex = -1;
+        let aChildren =
+          _.filter(aCompList, ["ParentUid", oParentComp.ElementUid]) || [];
+        if (sDropPosition === "On") {
+          iDroppedIndex = aChildren.length;
+        } else {
+          aChildren.forEach((c, i) => {
+            if (c.ElementId === oParentTree.ElementId) {
+              iDroppedIndex = i + 1;
+            }
+          });
+        }
+
+        if (iDroppedIndex === -1) {
+          this.toastMessage("E", "MESSAGE_FAILED", "DROP_TARGET_NOT_VALID", []);
+          return;
+        }
+
+        //--Recalculate index
+        aChildren =
+          _.filter(aCompList, ["ParentUid", oParentComp.ElementUid]) || [];
+
+        //--Insert element to the new position
+        let iNewIndex = -1;
+        let iChildIndex = 0;
+
+        let iChildCount = aChildren.length;
+
+        if (iChildCount === 0) {
+          iNewIndex = _.findIndex(aCompList, [
+            "ElementUid",
+            oParentComp.ElementUid,
+          ]);
+
+          if (iNewIndex === -1) {
+            return;
+          }
+
+          iNewIndex++;
+        } else {
+          aCompList.forEach((c, i) => {
+            if (c.ParentUid === oParentComp.ElementUid) {
+              if (sDropPosition === "Before") {
+                iChildIndex++;
+                if (iChildIndex === iDroppedIndex) {
+                  iNewIndex = i;
+                }
+              } else {
+                iChildIndex++;
+                if (iChildIndex === iDroppedIndex) {
+                  iNewIndex = i + 1;
+                }
+              }
+            }
+          });
+        }
+
+        if (iNewIndex === -1) {
+          this.toastMessage("E", "MESSAGE_FAILED", "DROP_INDEX_NOT_VALID", []);
+          return;
+        }
+
+        //--Insert new one
+        aCloneNode.forEach((oCloneNode)=>{
+          aCompList.splice(iNewIndex, 0, oCloneNode);
+          iNewIndex++;
+        });
+
+        let aNewCompList = [];
+
+        const rebuildCompList = (p) => {
+          let i = _.findIndex(aNewCompList, ["ElementUid", p.ElementUid]);
+
+          if (i === -1) {
+            aNewCompList.push(p);
+          }
+
+          let aChildren = _.filter(aCompList, ["ParentUid", p.ElementUid]);
+
+          aChildren.forEach((c) => {
+            let j = _.findIndex(aNewCompList, ["ElementUid", c.ElementUid]);
+            if (j === -1) {
+              aNewCompList.push(c);
+            }
+            rebuildCompList(c);
+          });
+        };
+
+        rebuildCompList(_.cloneDeep(aCompList[0]));
+
+        if (aNewCompList.length !== aCompOrig.length) {
+          this.toastMessage(
+            "E",
+            "MESSAGE_FAILED",
+            "DROP_AFTER_COMP_LIST_INCONSISTENT",
+            []
+          );
+          return;
+        }
+
+        //-Set the tree
+        let oNewParent = oNewParentContext.getProperty();
+
+        // In the JSON data of this example the children of a node are inside an array with the name "categories".
+        if (!oNewParent.children) {
+          oNewParent.children = []; // Initialize the children array.
+        }
+
+        for (var i = 0; i < aDraggedItemContexts.length; i++) {
+          if (
+            oNewParentContext
+              .getPath()
+              .indexOf(aDraggedItemContexts[i].getPath()) === 0
+          ) {
+            // Avoid moving a node into one of its child nodes.
+            continue;
+          }
+
+          // Copy the data to the new parent.
+          oNewParent.children.push(aDraggedItemContexts[i].getProperty());
+
+          // Remove the data. The property is simply set to undefined to preserve the tree state (expand/collapse states of nodes).
+          oViewModel.setProperty(
+            aDraggedItemContexts[i].getPath(),
+            undefined,
+            aDraggedItemContexts[i],
+            true
+          );
+        }
+
+        this.toastMessage("S", "MESSAGE_SUCCESSFUL", "DROP_SUCCESSFUL", []);
+
+        oViewModel.setProperty("/ComponentList", aNewCompList);
+
+        const oPayload = this._prepareOdataPayload(true, false);
+
+        this._constructUI(oPayload);
+      },
       /* =========================================================== */
       /* internal methods                                            */
       /* =========================================================== */
+
+      _handleSave: async function (bAs = false) {
+        var oViewModel = this.getModel("designView");
+        var oModel = this.getModel();
+        // var aCompList = oViewModel.getProperty("/ComponentList");
+        var that = this;
+
+        const { value: FormTitle } = await Swal.fire({
+          title: bAs ? "Formu Farklı Kaydet" : "Formu Kaydet",
+          input: "text",
+          inputLabel: "Formun tanımı",
+          inputPlaceholder: "Bir form tanımı giriniz",
+          inputValue: bAs
+            ? oViewModel.getProperty("/FormTitle") + " Kopyası"
+            : oViewModel.getProperty("/FormTitle"),
+          inputAttributes: {
+            maxlength: "40",
+            autocapitalize: "off",
+            autocorrect: "off",
+          },
+          showCancelButton: true,
+          cancelButtonText: this.getText("CANCEL_ACTION", []),
+          inputValidator: (value) => {
+            if (!value) {
+              return "Form tanımı girmelisiniz!";
+            }
+          },
+        });
+        if (FormTitle) {
+          oViewModel.setProperty("/FormTitle", FormTitle);
+
+          var oPayload = this._prepareOdataPayload(false, bAs);
+
+          // console.log(oPayload);
+          this.openBusyFragment(
+            bAs ? "SAVE_AS_IN_PROGRESS" : "SAVE_IN_PROGRESS",
+            []
+          );
+          oModel.create("/FormHeaderSet", oPayload, {
+            success: function (oData, oResponse) {
+              that.toastMessage("S", "MESSAGE_SUCCESSFUL", "FORM_SAVED", []);
+              that.closeBusyFragment();
+              if (bAs) {
+                that.getRouter().navTo(
+                  "design",
+                  {
+                    formId: oData.FormId,
+                  },
+                  false
+                );
+              }
+            },
+            error: function (oError) {
+              that.toastMessage("E", "MESSAGE_FAILED", "FORM_NOT_SAVED", []);
+              that.closeBusyFragment();
+            },
+          });
+        }
+      },
+      _prepareOdataPayload: function (bRefresh = false, bAs = false) {
+        var oViewModel = this.getModel("designView");
+        var aCompList = oViewModel.getProperty("/ComponentList");
+        var sFormId = bAs ? "" : this._currentFormId;
+
+        var oPayload = {
+          FormId: sFormId,
+          FormTitle: oViewModel.getProperty("/FormTitle"),
+          FormComponentSet: bRefresh ? { results: [] } : [],
+        };
+
+        if (bAs) {
+          aCompList.forEach((oComp, i) => {
+            const sNewUid = this._getNewUid();
+            var aChild =
+              _.filter(aCompList, ["ParentUid", oComp.ElementUid]) || [];
+            aChild.forEach((oChildComp, j) => {
+              aChild[j].ParentUid = sNewUid;
+            });
+            aCompList[i].ElementUid = sNewUid;
+          });
+        }
+
+        aCompList.forEach((oComp) => {
+          var oCompSet = {
+            FormId: sFormId,
+            FieldId: oComp.FieldId,
+            FieldDescription: oComp.FieldDescription,
+            Bindable: oComp.Bindable,
+            FormSection: oComp.FormSection,
+            ExcludeFromPrintOut: oComp.ExcludeFromPrintOut,
+            ElementUid: oComp.ElementUid,
+            ElementId: oComp.ElementId,
+            ParentUid: oComp.ParentUid,
+            Type: oComp.Type,
+            AggregationName: oComp.AggregationName,
+            FormComponentPropertySet: bRefresh ? { results: [] } : [],
+          };
+
+          var aOptions = this._getComponentProperties(oComp.Component) || [];
+
+          aOptions.forEach((oOpt) => {
+            if (oOpt.Value !== null) {
+              if (oOpt.Value === oOpt.DefaultValue) {
+                return;
+              }
+
+              if (Array.isArray(oOpt.Value) || typeof oOpt.Value === "object") {
+                let iLen = Array.isArray(oOpt.Value)
+                  ? oOpt.Value.length
+                  : Object.keys(oOpt.Value.length) || 0;
+
+                if (iLen <= 0) {
+                  return;
+                }
+                oOpt.Value = JSON.stringify(oOpt.Value);
+              }
+
+              var oProp = {
+                FormId: sFormId,
+                ElementUid: oComp.ElementUid,
+                PropertyName: oOpt.Property,
+                PropertyValue: oOpt.Value.toString(),
+                PropertyType: oOpt.Type,
+                IsStyleClass: false,
+              };
+              bRefresh
+                ? oCompSet.FormComponentPropertySet.results.push(oProp)
+                : oCompSet.FormComponentPropertySet.push(oProp);
+            }
+          });
+
+          if (oComp.Component?.aCustomStyleClasses) {
+            [...oComp.Component?.aCustomStyleClasses].forEach((o, i) => {
+              var oProp = {
+                FormId: sFormId,
+                ElementUid: oComp.ElementUid,
+                PropertyName: "customStyle" + i,
+                PropertyValue: o.toString(),
+                PropertyType: "string",
+                IsStyleClass: true,
+              };
+              bRefresh
+                ? oCompSet.FormComponentPropertySet.results.push(oProp)
+                : oCompSet.FormComponentPropertySet.push(oProp);
+            });
+          }
+
+          bRefresh
+            ? oPayload.FormComponentSet.results.push(oCompSet)
+            : oPayload.FormComponentSet.push(oCompSet);
+        });
+
+        return oPayload;
+      },
       _handleComponentSwap: function (oEvent, sDirection) {
         var oSource = oEvent.getSource();
         var sElementId = oSource.data("ElementId");
@@ -819,7 +1258,9 @@ sap.ui.define(
           oViewModel.setProperty("/FormId", sFormId);
           this._currentFormId = sFormId;
           this._callFormDetailsService();
-          this.byId("idDesignContainerTitle").bindProperty("text", {path:`/FormHeaderSet('${sFormId}')/FormTitle`});
+          this.byId("idDesignContainerTitle").bindProperty("text", {
+            path: `/FormHeaderSet('${sFormId}')/FormTitle`,
+          });
           this.byId("idDesignContainerTitle").setVisible(true);
         }
       },
@@ -859,7 +1300,8 @@ sap.ui.define(
       _createRootContainer: function (oData = null) {
         var oBox = this.byId("idDesignContainer");
         var oRoot =
-          this.byId("idDesignPaneRoot") || sap.ui.getCore().byId("idDesignPaneRoot");
+          this.byId("idDesignPaneRoot") ||
+          sap.ui.getCore().byId("idDesignPaneRoot");
         var oViewModel = this.getModel("designView");
 
         var sRootUid =
@@ -900,6 +1342,8 @@ sap.ui.define(
               FieldId: "FieldRootContainer0",
               FieldDescription: "Root Container",
               Bindable: false,
+              FormSection: null,
+              ExcludeFromPrintOut: false,
               Type: "FormWizard",
               Component: oRoot,
               Properties: null,
@@ -943,8 +1387,14 @@ sap.ui.define(
       _treeBindingRefresh: function () {
         setTimeout(() => {
           this.byId("idComponentTree").getBinding("items").refresh(true);
-          this.byId("idComponentTree").collapseAll();
-          this.byId("idComponentTree").expandToLevel(6);
+          
+          if(!this.treeExpanded){
+            this.treeExpanded = true;
+            this.byId("idComponentTree").collapseAll();
+            this.byId("idComponentTree").expandToLevel(3);
+          }else{
+            // this.byId("idComponentTree").expandToLevel(6);
+          }
         }, 500);
       },
       _handleAddComponent(oParent, sChildType) {
@@ -966,11 +1416,11 @@ sap.ui.define(
         }
       },
       _handleDeleteComponent(oElement) {
-        var oViewModel = this.getModel("designView");
-        var aCompTree = oViewModel.getProperty("/ComponentTree");
-        var aCompList = oViewModel.getProperty("/ComponentList");
+        const oViewModel = this.getModel("designView");
+        let aCompTree = oViewModel.getProperty("/ComponentTree");
+        let aCompList = oViewModel.getProperty("/ComponentList");
 
-        var oParent = this._getUIComponent(oElement.ParentId);
+        const oParent = this._getUIComponent(oElement.ParentId);
 
         try {
           oParent?.removeAggregation(
@@ -980,19 +1430,26 @@ sap.ui.define(
 
           oElement.Component.destroy();
 
-          var deleteItem = function (oEl) {
-            var i = aCompList.findIndex((o) => o.ElementId === oEl.ElementId);
+          const deleteItem = function (oEl) {
+            const i = aCompList.findIndex((o) => o.ElementId === oEl.ElementId);
             if (i !== -1) {
+              const aChildren =
+                _.filter(aCompList, ["ParentUid", oEl.ElementUid]) || [];
+              aChildren.forEach((oChild) => {
+                deleteItem(oChild);
+              });
               aCompList.splice(i, 1);
             }
           };
 
-          var deleteChildNodeRecursive = function (aTree, sId, bDel) {
-            for (var [i, oItem] of aTree.entries()) {
+          deleteItem(oElement);
+
+          const deleteChildNodeRecursive = function (aTree, sId, bDel) {
+            for (let [i, oItem] of aTree.entries()) {
               if (oItem.ElementId === sId || bDel) {
-                deleteChildNodeRecursive(oItem.Children, null, true);
                 aTree.splice(i, 1);
-                deleteItem(oItem);
+                deleteChildNodeRecursive(oItem.Children, null, true);
+                // deleteItem(oItem);
               } else {
                 deleteChildNodeRecursive(oItem.Children, sId, false);
               }
@@ -1005,7 +1462,21 @@ sap.ui.define(
           oViewModel.setProperty("/ComponentList", aCompList);
           oViewModel.setProperty("/ConfigOptions", []);
           oViewModel.setProperty("/CustomStyles", []);
-        } catch (e) {}
+
+          // //--Regenerate payload and reconsturct UI
+          // const oPayload = this._prepareOdataPayload(true, false);
+
+          // this._constructUI(oPayload);
+
+          // this.toastMessage(
+          //   "S",
+          //   "MESSAGE_SUCCESSFUL",
+          //   "DEL_COMPONENT_SUCCESSFUL",
+          //   []
+          // );
+        } catch (e) {
+          console.log(e);
+        }
       },
 
       _refreshComponentUI: function (oChild) {
@@ -1046,6 +1517,7 @@ sap.ui.define(
             return true;
           }
         } catch (e) {
+          console.log(e, oChild);
           this.toastMessage("E", "MESSAGE_ERROR", "ADD_COMPONENT_FAILED", [e]);
 
           return false;
@@ -1088,7 +1560,9 @@ sap.ui.define(
             } else {
               switch (oProp.PropertyType) {
                 case "object":
-                  oSavedProps[oProp.PropertyName] = _.cloneDeep(JSON.parse(oProp.PropertyValue));
+                  oSavedProps[oProp.PropertyName] = _.cloneDeep(
+                    JSON.parse(oProp.PropertyValue)
+                  );
                   break;
                 case "boolean":
                   oSavedProps[oProp.PropertyName] =
@@ -1149,6 +1623,8 @@ sap.ui.define(
               FieldId: oChild.FieldId,
               FieldDescription: oChild.FieldDescription,
               Bindable: oChild.Bindable,
+              ExcludeFromPrintOut: oChild.ExcludeFromPrintOut,
+              FormSection: oChild.FormSection,
               ParentId: oParent.ElementId,
               ParentUid: oParent.ElementUid,
               Component: oChildInstance,
@@ -1167,6 +1643,7 @@ sap.ui.define(
             return true;
           }
         } catch (e) {
+          console.log(e, oChildInstance);
           this.toastMessage("E", "MESSAGE_ERROR", "ADD_COMPONENT_FAILED", [e]);
 
           return false;
@@ -1249,6 +1726,8 @@ sap.ui.define(
               FieldId: sFieldId,
               FieldDescription: sFieldDesc,
               Bindable: false,
+              FormSection: null,
+              ExcludeFromPrintOut: false,
               ParentId: oParent?.getId(),
               ParentUid: oParentUI?.ElementUid || null,
               Component: oChildInstance,
@@ -1299,7 +1778,7 @@ sap.ui.define(
         var oViewModel = this.getModel("designView");
         var aCompList = oViewModel.getProperty("/ComponentList");
 
-        var oComp = sId
+        var oComp= sId
           ? aCompList.find((o) => o.ElementId === sId)
           : aCompList.find((o) => o.ElementUid === sUid);
 
@@ -1391,192 +1870,6 @@ sap.ui.define(
       _getNewUid: function () {
         return crypto.randomUUID().replace(/-/g, "");
       },
-      // onDrop: function (oInfo) {
-      //   var oDragged = oInfo.getParameter("draggedControl"),
-      //     oDropped = oInfo.getParameter("droppedControl"),
-      //     oDragProps = oDragged?.data("props"),
-      //     oDropProps,
-      //     sInsertPosition = oInfo.getParameter("dropPosition");
-
-      //   // iDragPosition = oDraggedParent.indexOfItem(oDragged),
-      //   // iDropPosition = oDroppedParent.indexOfItem(oDropped);
-
-      //   var oEl;
-
-      //   if (oDropped && oDragProps) {
-      //     switch (oDragProps.Type) {
-      //       case "Panel":
-      //         oEl = new sap.m.Panel({
-      //           ...oDragProps.DefaultProps,
-      //         });
-      //         break;
-      //       case "Form":
-      //         oEl = new sap.ui.layout.form.Form();
-      //         break;
-      //       case "FormContainer":
-      //         oEl = new sap.ui.layout.form.FormContainer();
-      //         break;
-      //       case "FormElement":
-      //         oEl = new sap.ui.layout.form.FormElement();
-      //         break;
-      //       case "Input":
-      //         oEl = new sap.m.Input();
-      //         break;
-      //       default:
-      //         break;
-      //     }
-
-      //     if (oEl) {
-      //       try {
-      //         var oDB = new DesignBox({
-      //           content: oEl,
-      //         });
-
-      //         oDB.addDragDropConfig(
-      //           new DragInfo({
-      //             groupName: "addToMainGrid",
-      //           })
-      //         );
-
-      //         oDB.addDragDropConfig(
-      //           new DropInfo({
-      //             groupName: "addToMainGrid",
-      //             drop: this.onDrop.bind(this),
-      //             dropPosition: "OnOrBetween",
-      //           })
-      //         );
-
-      //         if (oDragProps.AddMethod) {
-      //           oEl = oEl?.addStyleClass && oEl.addStyleClass("dropChild");
-      //           oEl.data("props", oDragProps);
-      //         }
-
-      //         var oParent;
-
-      //         if (oDropped.isA("com.thy.ux.per.components.SidePanel")) {
-      //           oParent = oDropped.getContent();
-      //           oDropProps = oParent?.data("props") || null;
-      //         } else {
-      //           oParent = oDropped;
-      //           oDropProps = null;
-      //         }
-
-      //         if (oDropProps && oDropProps.AddMethod) {
-      //           if (typeof oParent[oDropProps.AddMethod] !== "undefined") {
-      //             oParent[oDropProps.AddMethod](oDB);
-      //           } else {
-      //             MessageBox.show(
-      //               "Eklemede hata:Uygun bileşen ya da metod değil",
-      //               {
-      //                 icon: MessageBox.Icon.ERROR,
-      //                 title: "Hata Oluştu",
-      //               }
-      //             );
-      //           }
-      //         } else {
-      //           if (typeof oDropped.addItem !== "undefined") {
-      //             oDropped.addItem(oDB);
-      //           } else if (typeof oDropped.addContent !== "undefined") {
-      //             oDropped.addContent(oDB);
-      //           } else {
-      //             MessageBox.show("Eklemede hata:Uygun bileşen değil", {
-      //               icon: MessageBox.Icon.ERROR,
-      //               title: "Hata Oluştu",
-      //             });
-      //           }
-      //         }
-
-      //         // if (oDropProps && oDropProps.AddMethod) {
-      //         //   if (typeof oDropped[oDropProps.AddMethod] !== "undefined") {
-      //         //     oDropped[oDropProps.AddMethod](oEl);
-      //         //   } else {
-      //         //     MessageBox.show(
-      //         //       "Eklemede hata:Uygun bileşen ya da metod değil",
-      //         //       {
-      //         //         icon: MessageBox.Icon.ERROR,
-      //         //         title: "Hata Oluştu",
-      //         //       }
-      //         //     );
-      //         //   }
-      //         // } else {
-      //         //   if (typeof oDropped.addItem !== "undefined") {
-      //         //     oDropped.addItem(oEl);
-      //         //   } else if (typeof oDropped.addContent !== "undefined") {
-      //         //     oDropped.addContent(oEl);
-      //         //   } else {
-      //         //     MessageBox.show("Eklemede hata:Uygun bileşen değil", {
-      //         //       icon: MessageBox.Icon.ERROR,
-      //         //       title: "Hata Oluştu",
-      //         //     });
-      //         //   }
-      //         // }
-      //       } catch (e) {
-      //         MessageBox.show("Eklemede hata:" + e, {
-      //           icon: MessageBox.Icon.ERROR,
-      //           title: "Hata Oluştu",
-      //         });
-      //       }
-      //     }
-      //   }
-      // },
-      // _getDropIndicatorSize: function (oDraggedControl) {
-      //   // var oBindingContext = oDraggedControl.getBindingContext(),
-      //   // 	oData = oBindingContext.getModel().getProperty(oBindingContext.getPath());
-
-      //   // if (oDraggedControl.isA("sap.m.StandardListItem")) {
-      //   return {
-      //     rows: 1,
-      //     columns: 1,
-      //   };
-      //   // }
-      // },
-      // _attachDragAndDrop: function () {
-      //   var oList = this.byId("idDesignItems");
-      //   oList.addDragDropConfig(
-      //     new DragInfo({
-      //       groupName: "addToMainGrid",
-      //       sourceAggregation: "items",
-      //     })
-      //   );
-
-      //   // oList.addDragDropConfig(new DropInfo({
-      //   // 	targetAggregation: "items",
-      //   // 	dropPosition: DropPosition.Between,
-      //   // 	dropLayout: DropLayout.Vertical,
-      //   // 	drop: this.onDrop.bind(this)
-      //   // }));
-
-      //   var oRoot = this.byId("idDesignPaneRoot");
-      //   // var oRoot = this.byId("idDesignForm");
-      //   // oRoot.addDragDropConfig(
-      //   //   new DragInfo({
-      //   //     sourceAggregation: "items",
-      //   //   })
-      //   // );
-
-      //   oRoot.addDragDropConfig(
-      //     new DropInfo({
-      //       groupName: "addToMainGrid",
-      //       drop: this.onDrop.bind(this),
-      //       dropPosition: "On",
-      //     })
-      //   );
-
-      //   // oRoot.addDragDropConfig(new GridDropInfo({
-      //   // 	targetAggregation: "items",
-      //   // 	dropPosition: DropPosition.Between,
-      //   // 	dropLayout: DropLayout.Horizontal,
-      //   // 	dropIndicatorSize: this._getDropIndicatorSize.bind(this),
-      //   // 	drop: this.onDrop.bind(this)
-      //   // }));
-      //   // oRoot.addDragDropConfig(new GridDropInfo({
-      //   // 	targetAggregation: "content",
-      //   // 	dropPosition: DropPosition.Between,
-      //   // 	dropLayout: DropLayout.Horizontal,
-      //   // 	dropIndicatorSize: this._getDropIndicatorSize.bind(this),
-      //   // 	drop: this.onDrop.bind(this)
-      //   // }));
-      // }
     });
   }
 );
