@@ -322,7 +322,7 @@ sap.ui.define(
 
         this.toastMessage(
           "S",
-          "MESSAGE_SUCCESSFUL",
+          "MESSAGE_SUCCESS",
           "ELEMENT_COPIED_SUCCESSFULLY",
           []
         );
@@ -947,7 +947,7 @@ sap.ui.define(
           );
         }
 
-        this.toastMessage("S", "MESSAGE_SUCCESSFUL", "DROP_SUCCESSFUL", []);
+        this.toastMessage("S", "MESSAGE_SUCCESS", "DROP_SUCCESSFUL", []);
 
         oViewModel.setProperty("/ComponentList", aNewCompList);
 
@@ -998,7 +998,7 @@ sap.ui.define(
           );
           oModel.create("/FormHeaderSet", oPayload, {
             success: function (oData, oResponse) {
-              that.toastMessage("S", "MESSAGE_SUCCESSFUL", "FORM_SAVED", []);
+              that.toastMessage("S", "MESSAGE_SUCCESS", "FORM_SAVED", []);
               that.closeBusyFragment();
               if (bAs) {
                 that.getRouter().navTo(
@@ -1237,7 +1237,7 @@ sap.ui.define(
 
         this.toastMessage(
           "S",
-          "MESSAGE_SUCCESSFUL",
+          "MESSAGE_SUCCESS",
           "SWAP_COMPONENT_SUCCESSFUL",
           []
         );
@@ -1408,7 +1408,7 @@ sap.ui.define(
         if (bSuccess) {
           this.toastMessage(
             "S",
-            "MESSAGE_SUCCESSFUL",
+            "MESSAGE_SUCCESS",
             "ADD_COMPONENT_SUCCESSFUL",
             []
           );
@@ -1470,7 +1470,7 @@ sap.ui.define(
 
           // this.toastMessage(
           //   "S",
-          //   "MESSAGE_SUCCESSFUL",
+          //   "MESSAGE_SUCCESS",
           //   "DEL_COMPONENT_SUCCESSFUL",
           //   []
           // );

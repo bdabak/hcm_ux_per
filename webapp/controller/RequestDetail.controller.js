@@ -50,6 +50,10 @@ sap.ui.define(
         }
       },
 
+      onOrgUnitSelected: function () {
+        this._refreshBudget();
+      },
+
       onWizardNextStep: async function (oEvent) {
         const fnCallback = oEvent.getParameter("callbackFn");
         const oCurrentStep = oEvent.getParameter("currentStep");
@@ -80,7 +84,7 @@ sap.ui.define(
           if (bSuccess) {
             this.toastMessage(
               "S",
-              "MESSAGE_SUCCESSFUL",
+              "MESSAGE_SUCCESS",
               "REQUEST_SAVED_AS_DRAFT",
               []
             );
@@ -126,7 +130,7 @@ sap.ui.define(
 
         this.toastMessage(
           "S",
-          "MESSAGE_SUCCESSFUL",
+          "MESSAGE_SUCCESS",
           "FILE_UPLOAD_COMPLETE",
           []
         );
@@ -151,7 +155,7 @@ sap.ui.define(
             success: () => {
               this.toastMessage(
                 "S",
-                "MESSAGE_SUCCESSFUL",
+                "MESSAGE_SUCCESS",
                 "ATTACHMENT_DELETED",
                 []
               );
@@ -193,9 +197,59 @@ sap.ui.define(
 
         this._triggerUploadAttachments();
       },
+      onRefreshBudget: function () {
+        this._refreshBudget();
+      },
       /* =========================================================== */
       /* Private methods                                             */
       /* =========================================================== */
+      _refreshBudget: function () {
+        const oModel = this.getModel();
+        const oViewModel = this.getModel("detailView");
+        let oReqHeader = _.omit(oViewModel.getProperty("/RequestHeader"), [
+          "RequestDetailSet",
+        ]);
+        let oReqOperation = {
+          Operation: "BUDGET",
+          RequestHeader: oReqHeader,
+          ReturnSet: [],
+        };
+        this.openBusyFragment("BUDGET_BEING_READ");
+        oModel.create("/RequestOperationSet", oReqOperation, {
+          success: (oData) => {
+            const bError =
+              oData.ReturnSet?.results && oData.ReturnSet.results.length > 0;
+            oViewModel.setProperty(
+              "/RequestHeader/ApprovedBudget",
+              oData.RequestHeader.ApprovedBudget
+            );
+            oViewModel.setProperty(
+              "/RequestHeader/EmployeeCount",
+              oData.RequestHeader.EmployeeCount
+            );
+            oViewModel.setProperty(
+              "/RequestHeader/RemainingBudget",
+              oData.RequestHeader.RemainingBudget
+            );
+
+            if (bError) {
+              //--Give error
+              this._showErrors(oData.ReturnSet.results);
+            } else {
+              this.toastMessage(
+                "S",
+                "MESSAGE_SUCCESS",
+                "BUDGET_INFO_FETCHED",
+                []
+              );
+            }
+            this.closeBusyFragment();
+          },
+          error: (oError) => {
+            this.closeBusyFragment();
+          },
+        });
+      },
       _handleRequestDetailMatched: function (oEvent) {
         const sRequestId = oEvent.getParameter("arguments").requestId;
         const oViewModel = this.getModel("detailView");
@@ -245,6 +299,76 @@ sap.ui.define(
           oBox.destroyItems();
         }
       },
+      
+      _showBudgetWarning: function(){
+        const oViewModel = this.getModel("detailView");
+        const oProcessHeader = oViewModel.getProperty("/ProcessHeader");
+        const oRequestHeader = oViewModel.getProperty("/RequestHeader");
+        let bDownloaded = false;
+
+        const redirectForDownload = (sUrl)=>{
+          bDownloaded = true;
+          sap.m.URLHelper.redirect(sUrl, true);  
+          this.toastMessage("I", "MESSAGE_INFORMATION", "FILE_IS_BEING_DOWNLOADED", [])
+        };
+
+        const p = new Promise((resolve, reject) => {
+          if(oRequestHeader.RemainingBudget > 0){
+            resolve(true);
+          }else{
+            if(oProcessHeader.BudgetWarning){
+
+              Swal.fire({
+                icon: "warning",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                title: this.getText("BUDGET_WARNING",[]),
+                html: `
+                  <div class="budget-warning-container">
+                    <span class="budget-warning-text">${oProcessHeader.BudgetWarningText}</span>
+                    <div class="budget-attachment-container" role="button" tabIndex="0" data-download-url="/sap/opu/odata/sap/ZHCM_UX_PER_SRV/ProcessHeaderSet('${oProcessHeader.ProcessId}')/$value">
+                      <span class="budget-attachment-icon">download</span>
+                      <span class="budget-attachment-name">${oProcessHeader.AttachmentName}</span>
+                    </div>
+                  </div>
+                  `,
+                confirmButtonText: this.getText("CONFIRM_ACTION", []),
+                cancelButtonText:  this.getText("CANCEL_ACTION", []),
+                showCancelButton: true,
+                focusConfirm: false,
+                didOpen: () => {
+                  const popup = Swal.getPopup();
+                  let attachContainerButton = popup.querySelector('.budget-attachment-container');
+                  attachContainerButton.onclick = (event) => {
+                    bDownloaded = true;
+                    Swal.clickConfirm();
+                    redirectForDownload(`/sap/opu/odata/sap/ZHCM_UX_PER_SRV/ProcessHeaderSet('${oProcessHeader.ProcessId}')/$value`);
+                  }
+                },
+                preConfirm: () => {
+                  // const username = usernameInput.value
+                  // const password = passwordInput.value
+                  // if (!username || !password) {
+                  //   Swal.showValidationMessage(`Please enter username and password`)
+                  // }
+                  // return { username, password }
+                },
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  if(!bDownloaded){
+                    redirectForDownload(`/sap/opu/odata/sap/ZHCM_UX_PER_SRV/ProcessHeaderSet('${oProcessHeader.ProcessId}')/$value`);  
+                  }
+                  resolve(true);
+                }else{
+                  resolve(false);
+                }
+              });
+            }
+          }
+        });
+
+        return p;
+      },
       _handleNextStepCreate: async function (
         fnCallback,
         oCurrentStep,
@@ -252,6 +376,7 @@ sap.ui.define(
       ) {
         let bRequestHeader;
         let bProcess;
+        let bBudget;
         let bCheckRequest;
 
         switch (oCurrentStep.getNumber()) {
@@ -271,6 +396,11 @@ sap.ui.define(
                 return false;
               }
 
+              bBudget = await this._showBudgetWarning();
+              if (!bBudget) {
+                return false;
+              }
+
               this._constructUI();
             } catch (e) {
               console.error(e);
@@ -287,6 +417,18 @@ sap.ui.define(
               this._setRequestDetailsFromProcessData();
 
               bCheckRequest = await this._checkRequestDetails();
+
+              if (!bCheckRequest) {
+                return false;
+              }
+            } catch (e) {
+              console.error(e);
+              return false;
+            }
+            break;
+          case 3:
+            try {
+              bCheckRequest = await this._previewForm();
 
               if (!bCheckRequest) {
                 return false;
@@ -308,12 +450,17 @@ sap.ui.define(
         oTargetStep
       ) {
         let bRequestHeader;
-        let bProcess;
+        let bBudget;
         let bCheckRequest;
 
         switch (oCurrentStep.getNumber()) {
           case 1:
             if (!this._checkForm("idRequestHeaderForm")) {
+              return false;
+            }
+
+            bBudget = await this._showBudgetWarning();
+            if (!bBudget) {
               return false;
             }
 
@@ -343,6 +490,17 @@ sap.ui.define(
               return false;
             }
             break;
+          case 3:
+            try {
+              bCheckRequest = await this._previewForm();
+
+              if (!bCheckRequest) {
+                return false;
+              }
+            } catch (e) {
+              console.error(e);
+              return false;
+            }
         }
 
         if (typeof fnCallback === "function") {
@@ -361,6 +519,10 @@ sap.ui.define(
         );
         const aProcessFieldBindingSet = oViewModel.getProperty(
           "/ProcessFieldBindingSet"
+        );
+
+        const aProcessFieldEventSet = oViewModel.getProperty(
+          "/ProcessFieldEventSet"
         );
 
         //--Avoid duplicate entries clear the page
@@ -402,41 +564,41 @@ sap.ui.define(
               oElem.ElementUid,
             ]);
 
-            if (oElem.ElementId === "idMdChipComponent1304933955") {
-              if (typeof oElementInstance.attachChanged === "function") {
-                const oChangeFunc = new Function(
-                  "e",
-                  ` let bSelected = e.getSource().getSelected() || false;
-                    const oTabs = this.byId("idMdTabContainerComponent2502418796") || sap.ui.getCore().byId("idMdTabContainerComponent2502418796");
-                    if(bSelected){
-                      if(oTabs){
-                        oTabs.setActiveTabIndex(1);
-                          oTabs.getAggregation("tabs")[0].setActive(false);
-                          oTabs.getAggregation("tabPanels")[0].setHidden(true);
-                          oTabs.getAggregation("tabs")[1].setActive(true);
-                          oTabs.getAggregation("tabPanels")[1].setHidden(false);
-                          this.toastMessage("S", "MESSAGE_SUCCESSFUL", "TITLE_ACTIVE");
+            // if (oElem.ElementId === "idMdChipComponent1304933955") {
+            //   if (typeof oElementInstance.attachChanged === "function") {
+            //     const oChangeFunc = new Function(
+            //       "e",
+            //       ` let bSelected = e.getSource().getSelected() || false;
+            //         const oTabs = this.byId("idMdTabContainerComponent2502418796") || sap.ui.getCore().byId("idMdTabContainerComponent2502418796");
+            //         if(bSelected){
+            //           if(oTabs){
+            //             oTabs.setActiveTabIndex(1);
+            //               oTabs.getAggregation("tabs")[0].setActive(false);
+            //               oTabs.getAggregation("tabPanels")[0].setHidden(true);
+            //               oTabs.getAggregation("tabs")[1].setActive(true);
+            //               oTabs.getAggregation("tabPanels")[1].setHidden(false);
+            //               this.toastMessage("S", "MESSAGE_SUCCESS", "TITLE_ACTIVE");
 
-                          var body = $("html, body");
-                          body.stop().animate({scrollTop:oTabs.$().offset().top}, '500');
-                      }
-                    }else{
-                        if(oTabs){
-                          oTabs.setActiveTabIndex(0);
-                          oTabs.getAggregation("tabs")[0].setActive(true);
-                          oTabs.getAggregation("tabPanels")[0].setHidden(false);
-                          oTabs.getAggregation("tabs")[1].setActive(false);
-                          oTabs.getAggregation("tabPanels")[1].setHidden(true);
-                        }
-                    }
-                `
-                ).bind(this);
+            //               var body = $("html, body");
+            //               body.stop().animate({scrollTop:oTabs.$().offset().top}, '500');
+            //           }
+            //         }else{
+            //             if(oTabs){
+            //               oTabs.setActiveTabIndex(0);
+            //               oTabs.getAggregation("tabs")[0].setActive(true);
+            //               oTabs.getAggregation("tabPanels")[0].setHidden(false);
+            //               oTabs.getAggregation("tabs")[1].setActive(false);
+            //               oTabs.getAggregation("tabPanels")[1].setHidden(true);
+            //             }
+            //         }
+            //     `
+            //     ).bind(this);
 
-                oElementInstance.attachChanged((e) => {
-                  oChangeFunc(e);
-                });
-              }
-            }
+            //     oElementInstance.attachChanged((e) => {
+            //       oChangeFunc(e);
+            //     });
+            //   }
+            // }
 
             if (oProcessField && oComp?.BindingProperties) {
               if (oComp.BindingProperties?.ValueField) {
@@ -567,6 +729,32 @@ sap.ui.define(
               aFieldBinding.forEach((oBinding) => {
                 this._setPropertyBinding(oElementInstance, oBinding);
               });
+
+              const aFieldEvent =
+                _.filter(aProcessFieldEventSet, {
+                  ProcessId: oProcessField.ProcessId,
+                  ProcessFieldId: oProcessField.ProcessFieldId,
+                }) || [];
+
+              if (oElementInstance?.attachEvent) {
+                aFieldEvent.forEach((oFieldEvent) => {
+                  try {
+                    const oEventFunc = new Function(
+                      "oEvent",
+                      oFieldEvent.ProcessFieldEventCode
+                    ).bind(this);
+
+                    oElementInstance.attachEvent(
+                      oFieldEvent.ProcessFieldEventName,
+                      (e) => {
+                        oEventFunc(e);
+                      }
+                    );
+                  } catch (oEx) {
+                    console.error(oEx);
+                  }
+                });
+              }
             }
 
             if (oParentInstance[sAddMethod] && oElementInstance) {
@@ -653,21 +841,94 @@ sap.ui.define(
         this._checkAggregation(oForm);
 
         if (this.bHasFormErrors) {
-          this.toastMessage("E", "FORM_HAS_ERRORS", "CORRECT_ERRORS_RETRY", []);
+          this.toastMessage("E", "FORM_HAS_ERRORS", "FILL_REQUIRED_FIELDS", []);
         }
 
         return !this.bHasFormErrors;
       },
-      _checkAggregation: function (oElem) {
-        const aField = oElem?.getItems
-          ? oElem.getItems()
-          : oElem?.getContent
-          ? oElem?.getContent()
-          : [];
+      _getFields: function (oAggr) {
+        let aField = [];
 
-        if (!Array.isArray(aField)) {
-          aField = [aField];
+        if (!oAggr) {
+          return [];
         }
+
+        const oValidAggr = _.pick(oAggr, ["content", "items", "tabPanels"]);
+
+        for (const a in oValidAggr) {
+          if (!oValidAggr[a]) {
+            continue;
+          }
+          if (typeof oValidAggr[a] === "object") {
+            if (Array.isArray(oValidAggr[a])) {
+              oValidAggr[a].forEach((oItem) => {
+                aField.push(oItem);
+              });
+            } else {
+              aField.push(oValidAggr[a]);
+            }
+          }
+        }
+
+        return aField;
+      },
+      _invalidateHiddenFields: function (oElem) {
+        const aField = this._getFields(oElem?.mAggregations);
+
+        if (aField.length === 0) {
+          return;
+        }
+
+        aField.forEach((oField) => {
+          this._invalidateHiddenSingleField(oField);
+          this._invalidateHiddenFields(oField);
+        });
+      },
+
+      _invalidateHiddenSingleField: function (oField) {
+        if (oField?.setError) {
+          oField?.setError(false);
+        }
+
+        if (oField?.setErrorText) {
+          oField?.setErrorText("");
+        }
+
+        if (oField?.getValue) {
+          oField?.setValue(null);
+        }
+        if (oField?.getSelectedKey) {
+          oField?.setSelectedKey(null);
+        }
+        if (oField?.getSelectedKeys) {
+          oField?.setSelectedKeys([]);
+        }
+
+        if (oField?.getSelectedItems) {
+          oField?.setSelectedItems([]);
+        }
+
+        if (oField?.getValueSet) {
+          let aValueSet = oField.getValueSet();
+          aValueSet.forEach((oValue) => {
+            if (oValue.hasOwnProperty("checked")) {
+              oValue.checked === true ? (oValue.checked = false) : null;
+            }
+          });
+          oField.setValueSet(aValueSet);
+        }
+
+        if (oField?.getChecked) {
+          oField?.setChecked(false);
+        }
+
+        if (oField?.getSelected) {
+          oField?.setSelected(false);
+        }
+      },
+
+      _checkAggregation: function (oElem) {
+        const aField = this._getFields(oElem?.mAggregations);
 
         if (aField.length === 0) {
           return;
@@ -676,37 +937,24 @@ sap.ui.define(
         aField.forEach((oField) => {
           oField?.setError ? oField?.setError(false) : null;
           oField?.setErrorText ? oField?.setErrorText("") : null;
+          const bVisible = oField?.getVisible && oField.getVisible();
+          let bField = false;
 
-          if (oField?.getVisible && oField.getVisible()) {
+          if (bVisible) {
             //--Check it self
             if (oField?.getError && oField?.getRequired) {
+              bField = true;
               this._checkSingleField(oField);
             } else {
               this._checkAggregation(oField);
             }
-          }
-
-          //--Reset value of the invisible field
-          if (oField?.getVisible && !oField.getVisible()) {
-            if (oField?.getValue) {
-              oField?.setValue(null);
-            }
-            if (oField?.getSelectedKey) {
-              oField?.setSelectedKey(null);
-            }
-            if (oField?.getSelectedKeys) {
-              oField?.setSelectedKeys([]);
-            }
-
-            if (oField?.getChecked) {
-              oField?.setChecked(false);
-            }
-
-            if (oField?.getSelected) {
-              oField?.setSelected(false);
+          } else {
+            if (oField?.getError && oField?.getRequired) {
+              this._invalidateHiddenSingleField(oField);
+            } else {
+              this._invalidateHiddenFields(oField);
             }
           }
-          //--Check children of child
         });
 
         return;
@@ -825,7 +1073,7 @@ sap.ui.define(
         this.openBusyFragment("REQUEST_DETAILS_BEING_READ");
         oModel.read(sPath, {
           urlParameters: {
-            $expand: `ProcessHeader,RequestDetailSet,ProcessHeader/FormHeader,ProcessHeader/FormHeader/FormComponentSet,ProcessHeader/FormHeader/FormComponentSet/FormComponentPropertySet,ProcessHeader/ProcessFieldSet,ProcessHeader/ProcessFieldSet/ProcessFieldValueSet,ProcessHeader/ProcessFieldSet/ProcessFieldBindingSet,RequestAttachmentSet`,
+            $expand: `ProcessHeader,RequestDetailSet,ProcessHeader/FormHeader,ProcessHeader/FormHeader/FormComponentSet,ProcessHeader/FormHeader/FormComponentSet/FormComponentPropertySet,ProcessHeader/ProcessFieldSet,ProcessHeader/ProcessFieldSet/ProcessFieldValueSet,ProcessHeader/ProcessFieldSet/ProcessFieldBindingSet,ProcessHeader/ProcessFieldSet/ProcessFieldEventSet,RequestAttachmentSet`,
           },
           success: function (oData) {
             that._setProcessDataFromRequest(oData);
@@ -895,7 +1143,7 @@ sap.ui.define(
           this.openBusyFragment("PROCESS_DETAILS_BEING_READ");
           oModel.read(sPath, {
             urlParameters: {
-              $expand: `FormHeader,FormHeader/FormComponentSet,FormHeader/FormComponentSet/FormComponentPropertySet,ProcessFieldSet,ProcessFieldSet/ProcessFieldValueSet,ProcessFieldSet/ProcessFieldBindingSet`,
+              $expand: `FormHeader,FormHeader/FormComponentSet,FormHeader/FormComponentSet/FormComponentPropertySet,ProcessFieldSet,ProcessFieldSet/ProcessFieldValueSet,ProcessFieldSet/ProcessFieldBindingSet,ProcessFieldSet/ProcessFieldEventSet`,
             },
             success: function (oData) {
               that._setProcessData(oData, resolve);
@@ -925,6 +1173,7 @@ sap.ui.define(
         let aProcessFieldSet = [];
         let aProcessFieldValueSet = [];
         let aProcessFieldBindingSet = [];
+        let aProcessFieldEventSet = [];
         let oProcessDetail = {};
         let bError = false;
 
@@ -1070,7 +1319,7 @@ sap.ui.define(
                 } else {
                   oProcessDetail[oField.ProcessFieldId].Value =
                     oRequestField.ProcessFieldValue;
-                  if(oProcessDetail[oField.ProcessFieldId].Value === ''){
+                  if (oProcessDetail[oField.ProcessFieldId].Value === "") {
                     oProcessDetail[oField.ProcessFieldId].Value = null;
                   }
                 }
@@ -1088,7 +1337,11 @@ sap.ui.define(
               let oBindingModified = _.omit(oBinding, ["__metadata"]);
               aProcessFieldBindingSet.push(oBindingModified);
             });
-
+            //--Property events
+            oField.ProcessFieldEventSet.results.forEach((oEvent) => {
+              let oEventModified = _.omit(oEvent, ["__metadata"]);
+              aProcessFieldEventSet.push(oEventModified);
+            });
             //--Fill field value set
             oField.ProcessFieldValueSet.results.forEach((oValue) => {
               let oValueModified = _.omit(oValue, ["__metadata"]);
@@ -1099,6 +1352,8 @@ sap.ui.define(
           aProcessFieldSet = [];
           aProcessFieldValueSet = [];
           oProcessDetail = {};
+          aProcessFieldBindingSet = [];
+          aProcessFieldEventSet = [];
           bError = true;
           this._detailFormGenerationFailed();
         }
@@ -1110,7 +1365,9 @@ sap.ui.define(
           "/ProcessFieldBindingSet",
           aProcessFieldBindingSet
         );
+        oViewModel.setProperty("/ProcessFieldEventSet", aProcessFieldEventSet);
         oViewModel.setProperty("/ProcessDetail", oProcessDetail);
+        oViewModel.setProperty("/ProcessHeader", _.omit(oProcessHeader, ["__metadata"]));
 
         if (fnCallback && typeof fnCallback === "function") fnCallback(!bError);
       },
@@ -1182,6 +1439,61 @@ sap.ui.define(
                 resolve(false);
               }
               resolve(true);
+              this.closeBusyFragment();
+            },
+            error: (oError) => {
+              resolve(false);
+              this.closeBusyFragment();
+            },
+          });
+        });
+
+        return p;
+      },
+
+      _setPdfSource: function (sBase64File, resolve) {
+        const oPdfViewer = this.byId("idRequestPreview");
+        let aFileData = Uint8Array.from(atob(sBase64File), (c) =>
+          c.charCodeAt(0)
+        );
+        const oBlob = new Blob([aFileData], { type: "application/pdf" });
+
+        const sPdfUrl = URL.createObjectURL(oBlob);
+        jQuery.sap.addUrlWhitelist("blob"); // register blob url as whitelist
+
+        if (sBase64File && oPdfViewer && sPdfUrl) {
+          oPdfViewer.setSource(sPdfUrl);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      },
+
+      _previewForm: function () {
+        const oModel = this.getModel();
+        const oViewModel = this.getModel("detailView");
+        const oRequestHeader = oViewModel.getProperty("/RequestHeader");
+
+        const p = new Promise((resolve, reject) => {
+          let oReqOperation = {
+            Operation: "PREVIEW",
+            RequestHeader: _.cloneDeep(oRequestHeader),
+            ReturnSet: [],
+          };
+          this.openBusyFragment("REQUEST_PREVIEW_BEING_FETCHED");
+          oModel.create("/RequestOperationSet", oReqOperation, {
+            success: (oData) => {
+              const bError =
+                oData.ReturnSet?.results && oData.ReturnSet.results.length > 0;
+
+              if (bError) {
+                //--Give error
+                this._showErrors(oData.ReturnSet.results);
+                resolve(false);
+              }
+
+              this._setPdfSource(oData.RequestHeader.PrintOut, resolve);
+
               this.closeBusyFragment();
             },
             error: (oError) => {

@@ -1,0 +1,6 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+    <PDFViewer id="idRequestPreview" height="800px" title="{i18n>REQUEST_PREVIEW}" ></PDFViewer>
+</core:FragmentDefinition>

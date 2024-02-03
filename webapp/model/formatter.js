@@ -30,6 +30,13 @@ sap.ui.define([], function () {
         constructDownloadUrl: function(sId){
             return  `/sap/opu/odata/sap/ZHCM_UX_PER_SRV/RequestAttachmentSet('${sId}')/$value`;
         },
+        formatRequestTitle: function(sTitle){
+            if(sTitle){
+                return ` - ${sTitle}`;
+            }
+
+            return '';
+        }
 
     };
 

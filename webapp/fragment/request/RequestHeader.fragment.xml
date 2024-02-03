@@ -5,7 +5,7 @@
     xmlns:thy="com.thy.ux.per.controls"
 >
     <thy:FormContainer
-        rowGap="1rem"
+        rowGap="0.7rem"
         id="idRequestHeaderForm"
     >
         <md:Select
@@ -21,7 +21,6 @@
                 value="{RequestTypeDescription}"
             />
         </md:Select>
-        
         <md:Select
             variant="Outlined"
             label="{/#RequestHeader/OrgUnitCode/@sap:label}"
@@ -29,12 +28,63 @@
             required="true"
             enabled="true"
             selectedKey="{detailView>/RequestHeader/OrgUnitCode}"
+            change=".onOrgUnitSelected"
         >
             <md:SelectOption
                 key="{OrgUnitCode}"
                 value="{OrgUnitText} {= ${Substitute} ? '(Vekil)' : '' }"
             />
         </md:Select>
+        <!-- Budget fields -->
+        <HBox
+            class="flex-gap-sm"
+            justifyContent="Center"
+            alignItems="Center"
+            visible="{= ${detailView>/RequestHeader/OrgUnitCode} !== null }"
+        >
+            <md:TextField
+                editable="false"
+                label="{/#RequestHeader/ApprovedBudget/@sap:label}"
+                value="{detailView>/RequestHeader/ApprovedBudget}"
+                width="100%"
+            >
+                <md:layoutData>
+                    <FlexItemData growFactor="1" />
+                </md:layoutData>
+            </md:TextField>
+            <md:TextField
+                editable="false"
+                label="{/#RequestHeader/EmployeeCount/@sap:label}"
+                value="{detailView>/RequestHeader/EmployeeCount}"
+                width="100%"
+            >
+                <md:layoutData>
+                    <FlexItemData growFactor="1" />
+                </md:layoutData>
+            </md:TextField>
+            <md:TextField
+                editable="false"
+                label="{/#RequestHeader/RemainingBudget/@sap:label}"
+                value="{detailView>/RequestHeader/RemainingBudget}"
+                width="100%"
+            >
+                <md:layoutData>
+                    <FlexItemData growFactor="1" />
+                </md:layoutData>
+            </md:TextField>
+            <md:IconButton
+                press=".onRefreshBudget"
+                variant="Filled"
+            >
+                <md:icons>
+                    <md:Icon
+                        icon="sync"
+                        tooltip="{i18n>REFRESH_ACTION}"
+                    />
+                </md:icons>
+            </md:IconButton>
+        </HBox>
+        <!-- Budget fields -->
         <md:Select
             variant="Outlined"
             label="{/#RequestHeader/PartnershipCode/@sap:label}"

@@ -4,9 +4,14 @@
     xmlns:upload="sap.m.upload"
     xmlns:cd="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
     xmlns:thy="com.thy.ux.per.controls"
+    xmlns:md="com.smod.ux.mat.controls"
 >
-    <VBox>
+    <VBox class="flex-gap-lg">
+        <md:TextField type="TextArea" rows="4" label="{i18n>ADDITIONAL_NOTES}" maxLength="500" width="100%"
+            value="{detailView>/RequestHeader/AdditionalThoughts}"
+        />
         <upload:UploadSet
+
             id="idRequestAttachmentUpload"
             instantUpload="false"
             beforeUploadStarts=".onBeforeUploadStarts"

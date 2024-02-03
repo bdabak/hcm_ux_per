@@ -7,7 +7,7 @@ sap.ui.define(["sap/ui/core/Control"], function (Control) {
         rowGap: {
           type: "sap.ui.core.CSSSize",
           bindable: true,
-          defaultValue: "1rem",
+          defaultValue: "0.7rem",
         },
         title: {
           type: "string",

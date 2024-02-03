@@ -11,9 +11,10 @@
 >
     <Page
         showHeader="true"
-        title="{detailView>/PageTitle}"
+        title="{detailView>/PageTitle}{path:'detailView>/RequestHeader/RequestTitle', formatter: '.formatter.formatRequestTitle'}"
         showNavButton="true"
         navButtonPress=".onNavBack"
+        class="requestDetailPage"
     >   
         
         <thy:Wizard activeStep="1" id="idRequestWizard"
@@ -24,23 +25,23 @@
             <thy:steps>
                 <thy:WizardStep
                     number="1"
-                    title="Talep Başlığı"
-                    description="Talep türü ve başlığını giriniz"
+                    title="{i18n>REQUEST_HEADER}"
+                    description="{i18n>REQUEST_HEADER_DESCRIPTION}"
                 />
                 <thy:WizardStep
                     number="2"
-                    title="Talep Detayları"
-                    description="Talep detayları ve diğer veriler"
+                    title="{i18n>REQUEST_DETAIL}"
+                    description="{i18n>REQUEST_DETAIL_DESCRIPTION}"
                 />
                 <thy:WizardStep
                     number="3"
-                    title="Ek Dosyalar"
-                    description="Taleple ilgili ek dosyalar"
+                    title="{i18n>REQUEST_ADDITIONAL_INFO}"
+                    description="{i18n>REQUEST_ADDITIONAL_INFO_DESCRIPTION}"
                 />
                   <thy:WizardStep
                     number="4"
-                    title="Talep Özeti"
-                    description="Talep özeti ve gönderim"
+                    title="{i18n>REQUEST_REVIEW}"
+                    description="{i18n>REQUEST_REVIEW_DESCRIPTION}"
                 />
             </thy:steps>
             <thy:stepContents>
@@ -62,7 +63,7 @@
                 </thy:WizardStepContent>
                 <thy:WizardStepContent number="4">
                     <thy:content>
-                        <Text text="Step 4" />
+                         <core:Fragment type="XML" fragmentName="com.thy.ux.per.fragment.request.RequestPreview" />
                     </thy:content>
                 </thy:WizardStepContent>
             </thy:stepContents>

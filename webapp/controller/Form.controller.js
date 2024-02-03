@@ -46,7 +46,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
           //--Success
           that.toastMessage(
             "S",
-            "MESSAGE_SUCCESSFUL",
+            "MESSAGE_SUCCESS",
             "DEL_FORM_SUCCESSFUL",
             []
           );

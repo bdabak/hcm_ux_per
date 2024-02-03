@@ -29,7 +29,7 @@
                             class="emphasizedButton"
                             variant="Filled"
                         >
-                                <md:Icon icon="grid_view" tooltip="Yeni"/>
+                                <md:Icon icon="note_add" tooltip="Yeni"/>
                         </md:IconButton>
                     </content>
                 </OverflowToolbar>

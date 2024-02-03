@@ -263,11 +263,10 @@
     padding: 0;
   }
   .smod-wizard-body-row {
-    padding-bottom: 2rem;
-    padding-top: 2rem;
-    padding-left: 2rem;
-    padding-right: 2.5rem;
-  
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -414,14 +413,14 @@
       padding: 0 25px;
     }
     .smod-wizard-body-row {
-      padding-bottom: 3.75rem !important;
-      padding-top: 3.75rem !important;
-      padding-left: 2.5rem !important;
-      padding-right: 2.5rem !important;
+      padding-bottom: 2.5rem !important;
+      padding-top: 2rem !important;
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
     }
   
     .smod-wizard-body-form {
-      margin-top: 2.5rem !important;
+      margin-top: 1.5rem !important;
     }
   }
   
@@ -462,8 +461,8 @@
     .smod-wizard-body-form {
       -webkit-box-flex: 0;
       -ms-flex: 0 0 70%;
-      flex: 0 0 70%;
-      max-width: 70%;
+      flex: 0 0 80%;
+      max-width: 80%;
     }
   }
   
@@ -497,8 +496,8 @@
     .smod-wizard-body-form {
       -webkit-box-flex: 0;
       -ms-flex: 0 0 75%;
-      flex: 0 0 75%;
-      max-width: 75%;
+      flex: 0 0 85%;
+      max-width: 85%;
     }
   }
   
@@ -513,8 +512,8 @@
     .smod-wizard-body-form {
       -webkit-box-flex: 0;
       -ms-flex: 0 0 58.3333333333%;
-      flex: 0 0 58.3333333333%;
-      max-width: 58.3333333333%;
+      flex: 0 0 68.3333333333%;
+      max-width: 68.3333333333%;
     }
   }
   

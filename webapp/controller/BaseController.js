@@ -101,7 +101,7 @@ sap.ui.define([
 					sIcon = "success";
 					break;
 				case "I":
-					sIcon = "information";
+					sIcon = "info";
 					break;
 				default:
 					sIcon = "success";
