@@ -179,9 +179,9 @@
     -ms-flex-align: center;
     align-items: center;
     -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     color: #3f4254;
-    padding: 1rem 1rem;
+    padding: 0.5rem 0.5rem;
   }
   
   .smod-wizard-number {
@@ -203,8 +203,8 @@
     justify-content: center;
     background-color: rgb(232 25 50 / 10%);
     color: #e81932;
-    margin-right: 1rem;
-    margin-left: 1rem;
+    margin-right: 0.5rem;
+    margin-left: 0.2rem;
     border-radius: 0.5rem;
   }
   .smod-wizard-step[data-wizard-state="current"]
@@ -222,10 +222,17 @@
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
     flex-direction: column;
+    flex-wrap: nowrap;
   }
   .smod-wizard-title {
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+  }
+.smod-wizard-desc {
+    font-size: 0.85em;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
   }
   .smod-wizard-step[data-wizard-state="current"]
     .smod-wizard-wrapper
@@ -448,9 +455,9 @@
     }
     .smod-wizard-steps[data-total-steps="4"] .smod-wizard-step {
       -webkit-box-flex: 0;
-      -ms-flex: 0 0 calc(50% - 0.25rem);
-      flex: 0 0 calc(50% - 0.25rem);
-      width: calc(50% - 0.25rem);
+      -ms-flex: 0 0 calc(25% - 0.25rem);
+      flex: 0 0 calc(25% - 0.25rem);
+      width: calc(25% - 0.25rem);
     }
     .smod-wizard-steps[data-total-steps="3"] .smod-wizard-step {
        -webkit-box-flex: 0;

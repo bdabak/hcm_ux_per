@@ -1,3 +1,16 @@
+
+/* 
+@font-face {
+  font-family: 'BauhausGeoExVF';
+  src: url('https://mojomox.com/hosted-fonts/bauhaus-geo/v1/BauhausGeoExVF.woff2') format('woff2'),url('https://mojomox.com/hosted-fonts/bauhaus-geo/v1/BauhausGeoExVF.woff') format('woff');
+  font-weight: 1 999;
+  font-style: normal;
+}
+
+.someFont{
+  font-family: "BauhausGeoExVF", sans-serif;
+} */
+
 .pitPage {
   font-family: "Roboto", sans-serif;
 }
@@ -120,6 +133,11 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)
 .rejectButton {
   --md-sys-color-primary: #ce261d;
   background-color: #fff8f6;
+}
+
+.previewButton{
+  --md-sys-color-primary: #284a95;
+  background-color: #f7f7f7;
 }
 
 .emphasizedButton {

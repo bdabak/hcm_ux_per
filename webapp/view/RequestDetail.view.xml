@@ -19,6 +19,7 @@
         
         <thy:Wizard activeStep="1" id="idRequestWizard"
             nextStep=".onWizardNextStep"
+            prevStep=".onWizardPrevStep"
             saveAsDraft=".onSaveAsDraft"
             sendForApproval=".onSendForApproval"
         >

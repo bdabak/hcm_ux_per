@@ -17,6 +17,7 @@
             <headerToolbar>
                 <OverflowToolbar>
                     <content>
+                        <Button icon="sap-icon://nav-back" type="Transparent" press=".onNavHome" />
                         <Title
                             text="{i18n>REQUEST_LIST}"
                             level="H2"
@@ -49,56 +50,61 @@
             </headerToolbar>
             <columns>
                 <Column>
-                    <Text text="Talep Başlığı" />
+                    <Text text="{i18n>REQUEST_TITLE}" />
                 </Column>
                 <Column
                     minScreenWidth="Tablet"
                     demandPopin="true"
                 >
-                    <Text text="Durum" />
+                    <Text text="{i18n>REQUEST_STATUS}" />
                 </Column>
                 <Column
                     minScreenWidth="Tablet"
                     demandPopin="true"
                 >
-                    <Text text="Son Değişiklik" />
+                    <Text text="{i18n>REQUEST_UNIT}" />
                 </Column>
                 <Column
                     hAlign="Center"
                     width="10rem"
                 >
-                    <Text text="İşlemler" />
+                    <Text text="{i18n>ACTIONS}" />
                 </Column>
             </columns>
             <items>
                 <ColumnListItem vAlign="Middle">
                     <cells>
-                        <Title
-                            text="{RequestTitle}"
+                        <ObjectIdentifier
+                            title="{RequestTitle}"
+                            text="{RequestTypeText} - {PartnershipText}"
                             tooltip="{RequestId}"
                         />
-                        <ObjectStatus
-                            text="{
-                                path: 'WorkflowStatus'
-                            }"
-                            state="{
-                                path: 'WorkflowStatus',
-                                formatter: '.formatter.getWfStatusState'
-                            }"
-                        />
-                        <Text text="{
-                            path: 'CreationDate',
-                            type: 'sap.ui.model.odata.type.DateTime',
-                            formatOptions: {
-                                pattern: 'dd.MM.yyyy'
-                            }
-                        } - {
-                            path: 'CreationTime',
-                            type: 'sap.ui.model.odata.type.Time',
-                            formatOptions: {
-                                pattern: 'HH:mm'
-                            }
-                        }" />
+                        <VBox>
+                            <ObjectStatus
+                                text="{
+                                    path: 'WorkflowStatusText'
+                                }"
+                                state="{
+                                    path: 'WorkflowStatus',
+                                    formatter: '.formatter.getWfStatusState'
+                                }"
+                                class="sapUiTinyMarginBottom"
+                            />
+                            <Text text="{
+                                path: 'CreationDate',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: {
+                                    pattern: 'dd.MM.yyyy'
+                                }
+                            } - {
+                                path: 'CreationTime',
+                                type: 'sap.ui.model.odata.type.Time',
+                                formatOptions: {
+                                    pattern: 'HH:mm'
+                                }
+                            }" />
+                        </VBox>
+                        <Text text="{OrgUnitName}" />
                         <HBox
                             justifyContent="Center"
                             alignItems="Center"
@@ -107,7 +113,9 @@
                                 press=".onEditRequest"
                                 class="sapUiTinyMarginEnd"
                                 variant="Filled"
-                                cd:request-id="{RequestId}"
+                                cd:requestId="{RequestId}"
+                                 cd:version="{Version}"
+                                tooltip="{i18n>EDIT_ACTION}"
                             >
                                 <md:icons>
                                     <md:Icon icon="edit" />
@@ -115,12 +123,28 @@
                             </md:IconButton>
                             <md:IconButton
                                 press=".onDeleteRequest"
-                                class="rejectButton"
+                                class="rejectButton sapUiTinyMarginEnd"
                                 variant="Filled"
-                                cd:request-id="{RequestId}"
+                                tooltip="{i18n>DELETE_ACTION}"
+                                cd:requestId="{RequestId}"
+                                 cd:version="{Version}"
+                                cd:requestTitle="{RequestTitle}"
                             >
                                 <md:icons>
                                     <md:Icon icon="delete" />
+                                </md:icons>
+                            </md:IconButton>
+                            <md:IconButton
+                                press=".onPrintOut"
+                                class="previewButton"
+                                variant="Filled"
+                                tooltip="{i18n>PRINTOUT}"
+                                cd:requestId="{RequestId}"
+                                cd:version="{Version}"
+                                
+                            >
+                                <md:icons>
+                                    <md:Icon icon="article" />
                                 </md:icons>
                             </md:IconButton>
                         </HBox>

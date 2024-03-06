@@ -105,6 +105,20 @@
             "routes": [
                 {
                     "pattern": "",
+                    "name": "requestlist",
+                    "target": [
+                        "requestlist"
+                    ]
+                },
+                {
+                    "pattern": "createrequest",
+                    "name": "createrequest",
+                    "target": [
+                        "requestdetail"
+                    ]
+                },
+                {
+                    "pattern": "forms",
                     "name": "form",
                     "target": [
                         "form"
@@ -118,15 +132,8 @@
                     ]
                 },
                 {
-                    "pattern": "requestlist",
-                    "name": "requestlist",
-                    "target": [
-                        "requestlist"
-                    ]
-                },
-                {
-                    "pattern": "requestdetail/{requestId}",
-                    "name": "requestdetail",
+                    "pattern": "editrequest/{requestId}-{version}",
+                    "name": "editrequest",
                     "target": [
                         "requestdetail"
                     ]
